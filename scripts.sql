@@ -20,3 +20,12 @@ grant select, insert on sisfacturacion.cliente to facturador;
 grant select, update on sisfacturacion.producto to facturador;
 grant select, insert, update, delete on sisfacturacion.factura to facturador;
 grant select, insert, update, delete on sisfacturacion.detalle_factura to facturador;
+
+-- rol servicios
+create role servicios;
+grant select, insert on sisfacturacion.bodega to servicios;
+
+create user fvallejo identified by lticPUCE default tablespace DATOS temporary tablespace TEMP;
+
+select * from dba_users;
+grant connect, resource, facturador to fvallejo;
