@@ -11,3 +11,8 @@ select * from dba_users;
 alter session set "_ORACLE_SCRIPT"=TRUE;
 -- cascade se utiliza para eliminar todo de todo
 drop user usuario cascade;
+
+-- crear role y asignar accion select en dicho role en una tabla de la bd
+alter session set "_ORACLE_SCRIPT"=TRUE;
+create role facturador;
+grant select on sisfacturacion.bodega to facturador;
