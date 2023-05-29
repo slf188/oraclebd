@@ -1,73 +1,83 @@
-drop trigger TA_MODIFICA_PRECIO;
-
-create or replace trigger TU_PRECIO 
-before update of PRD_PRECIO
-on producto
-for each row
-begin 
-    if (:new.PRD_PRECIO > 100) then
-        raise_application_error(-20000, 'El precio esta furea de rango');
-    end if;
-end TU_PRECIO;
-/
-
-update producto set PRD_PRECIO = 101 where PRD_CODIGO = 'Prod1';
-
-create table empleado (
-    emp_ci  varchar2(15),
-    emp_nombre  varchar2(50),
-    crg_codigo  varchar2(10),
-    salario number(16,4)
+create table PRODUCTOAUX (
+    AUX_CODIGO  varchar2(11),
+    AUX_TIPO    varchar2(1),
+    AUX_MODELO  varchar2(1),
+    AUX_COLOR   varchar2(1),
+    AUX_TALLA   varchar2(2),
+    AUX_PRECIO  decimal(12, 4)
 )
     tablespace DATOS
 /
 
--- tenemos la tabla empleado que tiene 2 atributos crg_codigo y salario
--- crear un trigger que se ejecute en update en la tabla 'empleado' que el objetivo sea 'salario'
--- el atributo 'salario' es de tipo number(16, 4), necesitamos declarar una nueva variable que contenga el salario del presidente
--- si el salario del empleado que puede ser 'OPER' o 'GEREN' es superior al de 'PRESI' creaer un raise_application_error(el salario del empleado no puede ser mayor al del presidente)
--- y evitar que se asigne el nuevo valor al empleado
--- el nombre del trigger sera TU_SALARIO
+drop table PRODUCTOAUX;
 
-insert into empleado values ('1', 'Oden', 'OPER', 1000);
-insert into empleado values ('2', 'Roger', 'PRESI', 3000);
-insert into empleado values ('3', 'Rayleigh', 'GEREN', 2000);
-insert into empleado values ('4', 'Gaban', 'OPER', 2000);
-insert into empleado values ('5', 'Marco', 'GEREN', 2000);
-insert into empleado values ('6', 'Jozu', 'OPER', 1000);
-insert into empleado values ('7', 'Nekomamushi', 'OPER', 1000);
-insert into empleado values ('8', 'Inuarashi', 'OPER', 4000);
+desc PRODUCTOAUX;
 
-select * from empleado;
-
-desc empleado;  
-
-create or replace trigger TU_SALARIO
-before update on empleado
+-- disparador al momento de crear un nuevo registro y que actualize el AUX_CODIGO y el AUX_PRECIO
+-- aux_codigo se estrctura a_b_c_dd_ee
+create or replace trigger TRG_PRODUCTOAUX
+before insert on PRODUCTOAUX
 for each row
-declare
-    salario_presidente number(16, 4);
+-- a = aux_tipo del 1 al 3
+-- b = aux_modelo del 1 al 5
+-- c = aux_color del 1 al 4
+-- dd = aux_talla del 3 al 45
+-- ee = aux_precio
+-- usar los valores insertados para actualizar aux_codigo y aux_precio
 begin
-    select salario into salario_presidente from empleado where crg_codigo = 'PRESI';
-    if :new.crg_codigo = 'OPER' or :new.crg_codigo = 'GEREN' then
-        if :new.salario > salario_presidente then
-            raise_application_error(-20000, 'El salario del empleado no puede ser mayor al del presidente');
-        end if;
+-- restringir a, b, c, dd, ee si los valores no estan dentro del rango
+    if :new.AUX_TIPO not between 1 and 3 then
+        raise_application_error(-20001, 'El valor de AUX_TIPO no esta dentro del rango');
     end if;
-end TU_SALARIO;
+    if :new.AUX_MODELO not between 1 and 5 then
+        raise_application_error(-20002, 'El valor de AUX_MODELO no esta dentro del rango');
+    end if;
+    if :new.AUX_COLOR not between 1 and 4 then
+        raise_application_error(-20003, 'El valor de AUX_COLOR no esta dentro del rango');
+    end if;
+    if :new.AUX_TALLA not between 3 and 45 then
+        raise_application_error(-20004, 'El valor de AUX_TALLA no esta dentro del rango');
+    end if;
+
+    -- actializar aux_precio
+    -- precio de zapato es 20
+    -- si aux_color = 3 se suma 5%
+    -- si aux_color = 1 se suma 10%
+    -- si aux_color = 2 se suma 20%
+    -- si aux_color = 4 se suma 30%
+    if :new.AUX_COLOR = 3 then
+        :new.AUX_PRECIO := :new.AUX_PRECIO + (:new.AUX_PRECIO * 0.05);
+    elsif :new.AUX_COLOR = 1 then
+        :new.AUX_PRECIO := :new.AUX_PRECIO + (:new.AUX_PRECIO * 0.1);
+    elsif :new.AUX_COLOR = 2 then
+        :new.AUX_PRECIO := :new.AUX_PRECIO + (:new.AUX_PRECIO * 0.2);
+    elsif :new.AUX_COLOR = 4 then
+        :new.AUX_PRECIO := :new.AUX_PRECIO + (:new.AUX_PRECIO * 0.3);
+    end if;
+    -- si aux_talla 3 a 15 se suma 5%
+    -- si aux_talla 16 a 30 se suma 10%
+    -- si aux_talla 31 a 40 se suma 15%
+    -- si aux_talla > 40 se suma 20%
+    if :new.AUX_TALLA between 3 and 15 then
+        :new.AUX_PRECIO := :new.AUX_PRECIO + (:new.AUX_PRECIO * 0.05);
+    elsif :new.AUX_TALLA between 16 and 30 then
+        :new.AUX_PRECIO := :new.AUX_PRECIO + (:new.AUX_PRECIO * 0.1);
+    elsif :new.AUX_TALLA between 31 and 40 then
+        :new.AUX_PRECIO := :new.AUX_PRECIO + (:new.AUX_PRECIO * 0.15);
+    elsif :new.AUX_TALLA > 40 then
+        :new.AUX_PRECIO := :new.AUX_PRECIO + (:new.AUX_PRECIO * 0.2);
+    end if;
+    
+    -- redondear aux_precio a entero
+    :new.AUX_PRECIO := round(:new.AUX_PRECIO);
+
+    -- actualizar aux_codigo
+    :new.AUX_CODIGO := :new.AUX_TIPO || '_' || :new.AUX_MODELO || '_' || :new.AUX_COLOR || '_' || :new.AUX_TALLA || '_' || :new.AUX_PRECIO;
+end TRG_PRODUCTOAUX;
 /
 
-commit;
+drop trigger TRG_PRODUCTOAUX;
 
-drop trigger TU_SALARIO;
+insert into PRODUCTOAUX values ('3', '1', '1', '3', '19', 20.0);
 
-update empleado set salario = 100 where emp_nombre = 'Oden';
-update empleado set salario = 5000 where crg_codigo = 'OPER';
-update empleado set salario = 26000 where crg_codigo = 'GEREN';
-
-select * from empleado;
-insert into empleado values ('8', 'Vista', 'GEREN', 2000);
-update empleado set emp_ci = '9' where emp_nombre = 'Vista';
-
--- eliminar el empleado con emp_nombre = 'Vista' en la tabla empleados
-delete from empleado where emp_nombre = 'Vista';
+select * from productoaux;
