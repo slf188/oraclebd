@@ -40,3 +40,27 @@ end;
 /
 
 desc factura;
+
+-- funcion que verifica si el numero pasado como parametro es par
+create or replace function es_par (numero int)
+return boolean
+is
+begin
+    if mod(numero,2) = 0 then
+        return true;
+    else
+        return false;
+    end if;
+end;
+/
+
+drop function es_par;
+
+-- ejecutar la funcion
+declare 
+    resultado boolean;
+begin
+    resultado := es_par(2);
+    dbms_output.put_line('El numero es par: ' || resultado);
+end;
+/
