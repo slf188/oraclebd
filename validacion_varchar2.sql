@@ -16,6 +16,7 @@ begin
         return false;
     end if;
 end;
+/
 
 -- llamado
 declare
@@ -29,3 +30,4 @@ begin
         dbms_output.put_line('La cedula no es valida');
     end if;
 end;
+/
