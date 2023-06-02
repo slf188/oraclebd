@@ -3,7 +3,7 @@ set SERVEROUTPUT on;
 -- 10 digitos
 -- primer parametro la cedula de tipo entero
 -- devolver booleano
-create or replace function validar_cedula_ecuatoriana(cedula integer)
+create or replace function validar_cedula(cedula integer)
 return boolean
 -- multiplicar alternadavemente por 2 y 1 menos el ultimo digito
 -- 2 1 2 1 2 1 2 1 2 
@@ -50,7 +50,7 @@ declare
     v_cedula integer := 0604250381;
     v_resultado boolean;
 begin
-    v_resultado := validar_cedula_ecuatoriana(v_cedula);
+    v_resultado := validar_cedula(v_cedula);
     if v_resultado then
         dbms_output.put_line('La cedula es valida');
     else
