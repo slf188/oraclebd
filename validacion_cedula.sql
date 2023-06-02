@@ -1,12 +1,13 @@
--- crear una funcion que permita validar un numero de cedula ecuatoriano
--- tiene que tener 10 digitos
--- tenemos que aceptar como primer parametro la cedula de tipo entero
--- devolver verdadero o falso
+set SERVEROUTPUT on;
+-- validar un numero de cedula ecuatoriano
+-- 10 digitos
+-- primer parametro la cedula de tipo entero
+-- devolver booleano
 create or replace function validar_cedula_ecuatoriana(cedula integer)
 return boolean
--- tenemos que multiplicar cada digito alternadavemente por 2 y 1 menos el ultimo digito
+-- multiplicar alternadavemente por 2 y 1 menos el ultimo digito
 -- 2 1 2 1 2 1 2 1 2 
--- tenemos que sumar los digitos de los resultados de la multiplicacion
+-- sumar los resultados de la multiplicacion
 -- verificar si el segundo digito de la suma es mayor a 0
 -- si es mayor sumar el primer digito a la decena superior
 -- restar el resultado de la suma menos el resultado de la decena superior
@@ -33,7 +34,7 @@ begin
             v_suma := v_suma + to_number(substr(v_cedula, i, 1)) * 2;
         end if;
     end loop;
-    if v_suma > 0 then 
+    if v_suma > 0 then
         v_decena_superior := (trunc(v_suma / 10) + 1) * 10;
     end if;
     v_resultado := v_decena_superior - v_suma;
@@ -44,7 +45,7 @@ begin
     end if;
 end;
 
--- llamando la funcion
+-- llamado de la funcion
 declare
     v_cedula integer := 0604250381;
     v_resultado boolean;
