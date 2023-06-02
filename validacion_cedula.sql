@@ -33,7 +33,7 @@ begin
             v_suma := v_suma + to_number(substr(v_cedula, i, 1)) * 2;
         end if;
     end loop;
-    if v_suma > 0 then
+    if v_suma > 0 then 
         v_decena_superior := (trunc(v_suma / 10) + 1) * 10;
     end if;
     v_resultado := v_decena_superior - v_suma;
@@ -41,5 +41,18 @@ begin
         return true;
     else
         return false;
+    end if;
+end;
+
+-- llamando la funcion
+declare
+    v_cedula integer := 0604250381;
+    v_resultado boolean;
+begin
+    v_resultado := validar_cedula_ecuatoriana(v_cedula);
+    if v_resultado then
+        dbms_output.put_line('La cedula es valida');
+    else
+        dbms_output.put_line('La cedula no es valida');
     end if;
 end;
