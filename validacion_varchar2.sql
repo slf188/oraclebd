@@ -1,3 +1,5 @@
+set SERVEROUTPUT on;
+
 create or replace function validar_cedula_ecuatoriana(v_cedula varchar2)
 return boolean
 is
