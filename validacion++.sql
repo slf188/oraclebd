@@ -1,6 +1,6 @@
 set SERVEROUTPUT on;
 
-create or replace function validar_cedula_ecuatoriana(cedula integer)
+create or replace function validar(cedula integer)
 return boolean
 is
     v_cedula varchar2(10); -- cedula como string
@@ -25,7 +25,7 @@ declare
     v_cedula integer := 0604250381;
     v_resultado boolean;
 begin
-    v_resultado := validar_cedula_ecuatoriana(v_cedula);
+    v_resultado := validar(v_cedula);
     if v_resultado then
         dbms_output.put_line('La cedula es valida');
     else
