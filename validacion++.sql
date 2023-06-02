@@ -1,18 +1,18 @@
 create or replace function validar_cedula_ecuatoriana(cedula integer)
 return boolean
 is
-    v_cedula varchar2(10);
-    v_suma number(2) := 0;
-    v_resultado number(2) := 0;
+    v_cedula varchar2(10); -- cedula como string
+    v_suma number(2) := 0; -- variable que acumula la suma de las multiplicaciones
+    v_resultado number(2) := 0; -- resultado de la validacion
 begin
-    v_cedula := to_char(cedula);
-    for i in 1..9 loop
-        v_suma := v_suma + to_number(substr(v_cedula, i, 1)) * (3 - mod(i, 2));
+    v_cedula := to_char(cedula); -- convertir a string
+    for i in 1..9 loop -- loop sobre los digitos de la cedula
+        v_suma := v_suma + to_number(substr(v_cedula, i, 1)) * (3 - mod(i, 2)); -- multiplicar por 1 y 2 alternado, sumar todo y almacenarlo en v_suma
     end loop;
-    v_resultado := mod(v_suma, 10);
-    if v_resultado = 0 then
+    v_resultado := mod(v_suma, 10); -- calcular el resto de la suma dividido por 10
+    if v_resultado = 0 then -- si el resto es 0 la cedula es valida
         return true;
-    else
+    else -- de lo contrario es invalida
         return false;
     end if;
 end;
