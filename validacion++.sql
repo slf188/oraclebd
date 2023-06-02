@@ -1,3 +1,5 @@
+set SERVEROUTPUT on;
+
 create or replace function validar_cedula_ecuatoriana(cedula integer)
 return boolean
 is
@@ -16,6 +18,7 @@ begin
         return false;
     end if;
 end;
+/
 
 -- llamado de la funcion
 declare
@@ -29,3 +32,4 @@ begin
         dbms_output.put_line('La cedula no es valida');
     end if;
 end;
+/
