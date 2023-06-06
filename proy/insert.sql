@@ -166,7 +166,7 @@ insert into revista values ('2', 'rev2', 'edi2', 2, 2);
 -- selects
 select * from congreso;
 select * from descriptor;
-select * from descriptor_linea; -- falta
+select * from descriptor_linea;
 select * from investigacion;
 select * from linea_investigacion;
 select * from profesor; -- falta
