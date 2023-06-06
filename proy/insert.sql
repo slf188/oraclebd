@@ -168,12 +168,12 @@ select * from congreso;
 select * from descriptor;
 select * from descriptor_linea; -- falta
 select * from investigacion;
-select * from linea_investigacion; -- falta
+select * from linea_investigacion;
 select * from profesor; -- falta
 select * from profesor_investigacion; -- falta
 select * from profesor_linea; -- falta
 select * from profesor_publicacion; -- falta
 select * from publicacion;
 select * from publicacion_congreso; 
-select * from publicacion_revista; -- falta
+select * from publicacion_revista;
 select * from revista; 
