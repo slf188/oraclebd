@@ -100,42 +100,65 @@ create table REVISTA (
 -- 6 atri
 desc congreso; 
 -- tipo nacional o internacional
-insert into congreso values ('1', 'con1', 'nacional',
+insert into congreso values ('1', 'con1', 'nacional', to_date('06/06/2022', 'dd/mm/yyyy'), to_date('08/06/2023', 'dd/mm/yyyy'), 'Madrid', 'España', 'ed1');
+insert into congreso values ('2', 'con2', 'internacional', to_date('05/05/2022', 'dd/mm/yyyy'), to_date('05/05/2023', 'dd/mm/yyyy'), 'Valencia', 'España', 'ed2');
 
 desc descriptor; 
 -- 2 atri
+insert into descriptor values ('1', 'desc1');
+insert into descriptor values ('2', 'desc2');
 
 desc descriptor_linea; 
 -- 2 atri
+insert into descriptor_linea values ('1', '1');
+insert into descriptor_linea values ('2', '2');
 
 desc investigacion; 
 -- 8 atri
+insert into investigacion values ('1', 'inv1', 'acr1', 'desc1', 'fin1', 1000, to_date('01/01/2022', 'dd/mm/yyyy'), to_date('01/01/2023', 'dd/mm/yyyy'));
+insert into investigacion values ('2', 'inv2', 'acr2', 'desc2', 'fin2', 2000, to_date('02/02/2022', 'dd/mm/yyyy'), to_date('02/02/2023', 'dd/mm/yyyy'));
 
 desc linea_investigacion;
 -- 3
+insert into linea_investigacion values ('1', 1, 'lin1');
+insert into linea_investigacion values ('2', 2, 'lin2');
 
 desc profesor; 
 -- 7
+insert into profesor values ('1', '1', 'Ivan', 'Moyota', 1, '123456789', 'tit1');
+insert into profesor values ('2', '2', 'Patricio', 'Santillan', 2, '987654321', 'tit2');
 
 desc profesor_investigacion; 
 -- 5
+insert into profesor_investigacion values ('1', '1', to_date('01/01/2022', 'dd/mm/yyyy'), to_date('01/01/2023', 'dd/mm/yyyy'), 1);
+insert into profesor_investigacion values ('2', '2', to_date('02/02/2022', 'dd/mm/yyyy'), to_date('02/02/2023', 'dd/mm/yyyy'), 0);
 
 desc profesor_linea; 
 -- 2
+insert into profesor_linea values ('1', '1');
+insert into profesor_linea values ('2', '2');
 
 desc profesor_publicacion; 
 -- 2
+insert into profesor_publicacion values (1, '1');
+insert into profesor_publicacion values (2, '2');
 
 desc publicacion; 
 -- 3
+insert into publicacion values (1, '1', 'pub1');
+insert into publicacion values (2, '2', 'pub2');
 
 desc publicacion_congreso; 
 -- 2
+insert into publicacion_congreso values ('1', 1);
+insert into publicacion_congreso values ('2', 2);
 
 desc publicacion_revista; 
 -- 4
+insert into publicacion_revista values (1, '1', 1, 2);
+insert into publicacion_revista values (2, '2', 3, 4);
 
 desc revista;
 -- 5
-insert into revista values ('1', 'c1', 'ed1', 1, 1);
-insert into revista values ('2', 'c1', 'ed1', 1, 1);
+insert into revista values ('1', 'rev1', 'edi1', 1, 1);
+insert into revista values ('2', 'rev2', 'edi2', 2, 2);
