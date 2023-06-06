@@ -40,35 +40,6 @@ create table LINEA_INVESTIGACION (
    constraint PK_LINEA_INVESTIGACION primary key (LNINV_ID)
 )
 
-create table PROFESOR (
-   PRF_ID               VARCHAR2(8)           not null,
-   PRO_PRF_ID           VARCHAR2(8),
-   PRF_NOMBRES          VARCHAR2(64),
-   PRF_APELLIDOS        VARCHAR2(64),
-   PRF_NUM_DESPACHO     INTEGER,
-   PRF_TELEFONO         VARCHAR2(15),
-   PRF_TITULACION       VARCHAR2(40),
-   constraint PK_PROFESOR primary key (PRF_ID)
-)
-
-create table PROFESOR_INVESTIGACION (
-   PRF_ID               VARCHAR2(8)           not null,
-   INV_ID               VARCHAR2(8)           not null,
-   PRFINV_FECHA_INICIO  DATE,
-   PRFINV_FECHA_FIN     DATE,
-   PRFINV_ES_LIDER      NUMBER
-)
-
-create table PROFESOR_LINEA (
-   PRF_ID               VARCHAR2(8)           not null,
-   LNINV_ID             VARCHAR2(8)           not null
-)
-
-create table PROFESOR_PUBLICACION (
-   PUB_ID               INTEGER               not null,
-   PRF_ID               VARCHAR2(8)           not null
-)
-
 create table PUBLICACION (
    PUB_ID               INTEGER               not null,
    INV_ID               VARCHAR2(8)           not null,
@@ -123,26 +94,6 @@ desc linea_investigacion;
 insert into linea_investigacion values ('1', 1, 'lin1');
 insert into linea_investigacion values ('2', 2, 'lin2');
 
-desc profesor; 
--- 7
-insert into profesor values ('1', '1', 'Ivan', 'Moyota', 1, '123456789', 'tit1');
-insert into profesor values ('2', '2', 'Patricio', 'Santillan', 2, '987654321', 'tit2');
-
-desc profesor_investigacion; 
--- 5
-insert into profesor_investigacion values ('1', '1', to_date('01/01/2022', 'dd/mm/yyyy'), to_date('01/01/2023', 'dd/mm/yyyy'), 1);
-insert into profesor_investigacion values ('2', '2', to_date('02/02/2022', 'dd/mm/yyyy'), to_date('02/02/2023', 'dd/mm/yyyy'), 0);
-
-desc profesor_linea; 
--- 2
-insert into profesor_linea values ('1', '1');
-insert into profesor_linea values ('2', '2');
-
-desc profesor_publicacion; 
--- 2
-insert into profesor_publicacion values (1, '1');
-insert into profesor_publicacion values (2, '2');
-
 desc publicacion; 
 -- 3
 insert into publicacion values (1, '1', 'pub1');
@@ -169,10 +120,6 @@ select * from descriptor;
 select * from descriptor_linea;
 select * from investigacion;
 select * from linea_investigacion;
-select * from profesor; -- falta
-select * from profesor_investigacion; -- falta
-select * from profesor_linea; -- falta
-select * from profesor_publicacion; -- falta
 select * from publicacion;
 select * from publicacion_congreso; 
 select * from publicacion_revista;
