@@ -162,3 +162,18 @@ desc revista;
 -- 5
 insert into revista values ('1', 'rev1', 'edi1', 1, 1);
 insert into revista values ('2', 'rev2', 'edi2', 2, 2);
+
+-- selects
+select * from congreso;
+select * from descriptor;
+select * from descriptor_linea;
+select * from investigacion;
+select * from linea_investigacion;
+select * from profesor;
+select * from profesor_investigacion;
+select * from profesor_linea;
+select * from profesor_publicacion;
+select * from publicacion;
+select * from publicacion_congreso;
+select * from publicacion_revista;
+select * from revista; 
