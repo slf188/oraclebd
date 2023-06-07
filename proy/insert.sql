@@ -125,17 +125,3 @@ insert into profesor_investigacion values ('PRF-2', 'INV-2', to_date('03/01/2023
 
 insert into revista values ('REV-1', 'Revista 1', 'Editorial 1', 1, 1, 1, 1);
 insert into revista values ('REV-2', 'Revista 2', 'Editorial 2', 2, 2, 2, 2);
-
-
--- selects
-select * from congreso;
-select * from descriptor;
-select * from investigacion;
-select * from publicacion;
-select * from linea_investigacion;
-select * from descriptor_linea;
-select * from supervisor;
-select * from investigacion_supervisor;
-select * from profesor;
-select * from profesor_investigacion;
-select * from revista; 
