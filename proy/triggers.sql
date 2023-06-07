@@ -8,3 +8,14 @@ begin
     end if;
 end;
 /
+
+-- trigger que evite que se colisionen las paginas de inicio y fin de una revista
+create or replace trigger paginas_revista
+before insert or update on revista
+for each row
+begin
+    if :new.REV_PAG_INICIO >= :new.REV_PAG_FIN then
+        raise_application_error(-20000, 'La pagina de inicio debe ser menor que la pagina de fin');
+    end if;
+end;
+/
