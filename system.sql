@@ -11,5 +11,5 @@ size 500M
     autoextend on next 100M;
     
 alter session set "_ORACLE_SCRIPT"=TRUE;
-create user sisfactura identified by lticPUCE default tablespace DATOS;
-grant connect, resource, dba to sisfactura;
+create user sisfacturacion identified by lticPUCE default tablespace DATOS;
+grant connect, resource, dba to sisfacturacion;
