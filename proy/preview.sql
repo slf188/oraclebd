@@ -77,6 +77,12 @@ drop trigger TDB_INVESTIGACION
 drop trigger TUB_INVESTIGACION
 /
 
+drop trigger TIB_INVESTIGACION_SUPERVISOR
+/
+
+drop trigger TUB_INVESTIGACION_SUPERVISOR
+/
+
 drop trigger TDB_LINEA_INVESTIGACION
 /
 
@@ -89,9 +95,6 @@ drop trigger TUB_LINEA_INVESTIGACION
 drop trigger TDB_PROFESOR
 /
 
-drop trigger TIB_PROFESOR
-/
-
 drop trigger TUB_PROFESOR
 /
 
@@ -99,18 +102,6 @@ drop trigger TIB_PROFESOR_INVESTIGACION
 /
 
 drop trigger TUB_PROFESOR_INVESTIGACION
-/
-
-drop trigger TIB_PROFESOR_LINEA
-/
-
-drop trigger TUB_PROFESOR_LINEA
-/
-
-drop trigger TIB_PROFESOR_PUBLICACION
-/
-
-drop trigger TUB_PROFESOR_PUBLICACION
 /
 
 drop trigger TDB_PUBLICACION
@@ -122,22 +113,16 @@ drop trigger TIB_PUBLICACION
 drop trigger TUB_PUBLICACION
 /
 
-drop trigger TIB_PUBLICACION_CONGRESO
-/
-
-drop trigger TUB_PUBLICACION_CONGRESO
-/
-
-drop trigger TIB_PUBLICACION_REVISTA
-/
-
-drop trigger TUB_PUBLICACION_REVISTA
-/
-
 drop trigger TDB_REVISTA
 /
 
 drop trigger TUB_REVISTA
+/
+
+drop trigger TDB_SUPERVISOR
+/
+
+drop trigger TUB_SUPERVISOR
 /
 
 drop table CONGRESO cascade constraints
@@ -158,13 +143,19 @@ drop table DESCRIPTOR_LINEA cascade constraints
 drop table INVESTIGACION cascade constraints
 /
 
+drop index INVESTIGACION_ESTA_INVESTIGACI
+/
+
+drop index SUPERVISOR_SUPERVISA_INVESTIGA
+/
+
+drop table INVESTIGACION_SUPERVISOR cascade constraints
+/
+
 drop index PUBLICACION_INCLUYE_LINEA_INVE
 /
 
 drop table LINEA_INVESTIGACION cascade constraints
-/
-
-drop index PROFESOR_SUPERVISA_PROFESOR_FK
 /
 
 drop table PROFESOR cascade constraints
@@ -179,22 +170,10 @@ drop index PROFESOR_TIENE_PROFESOR_INVEST
 drop table PROFESOR_INVESTIGACION cascade constraints
 /
 
-drop index LINEA_ESTA_PROFESOR_LINEA_FK
+drop index CONGRESO_PRODUCE_PUBLICACION_F
 /
 
-drop index PROFESOR_DISPONE_PROFESOR_LINE
-/
-
-drop table PROFESOR_LINEA cascade constraints
-/
-
-drop index PUBLICACION_ESTA_PUBLICACION_P
-/
-
-drop index PROFESOR_EFECTUA_PROFESOR_PUBL
-/
-
-drop table PROFESOR_PUBLICACION cascade constraints
+drop index REVISTA_PUBLICA_PUBLICACION_FK
 /
 
 drop index INVESTIGACION_CONTIENE_PUBLICA
@@ -203,25 +182,10 @@ drop index INVESTIGACION_CONTIENE_PUBLICA
 drop table PUBLICACION cascade constraints
 /
 
-drop index CONGRESO_REALIZA_PUBLICACION_C
-/
-
-drop index PUBLICACION_POSEE_PUBLICACION_
-/
-
-drop table PUBLICACION_CONGRESO cascade constraints
-/
-
-drop index REVISTA_HACE_PUBLICACION_REVIS
-/
-
-drop index PUBLICACION_TIENE_PUBLICACION_
-/
-
-drop table PUBLICACION_REVISTA cascade constraints
-/
-
 drop table REVISTA cascade constraints
+/
+
+drop table SUPERVISOR cascade constraints
 /
 
 /*==============================================================*/
@@ -298,6 +262,34 @@ create table INVESTIGACION (
 /
 
 /*==============================================================*/
+/* Table: INVESTIGACION_SUPERVISOR                              */
+/*==============================================================*/
+create table INVESTIGACION_SUPERVISOR (
+   SUP_ID               VARCHAR2(8)           not null,
+   INV_ID               VARCHAR2(8)           not null
+)
+   tablespace DATOSG1
+/
+
+/*==============================================================*/
+/* Index: SUPERVISOR_SUPERVISA_INVESTIGA                        */
+/*==============================================================*/
+create index SUPERVISOR_SUPERVISA_INVESTIGA on INVESTIGACION_SUPERVISOR (
+   SUP_ID ASC
+)
+tablespace INDICESG1
+/
+
+/*==============================================================*/
+/* Index: INVESTIGACION_ESTA_INVESTIGACI                        */
+/*==============================================================*/
+create index INVESTIGACION_ESTA_INVESTIGACI on INVESTIGACION_SUPERVISOR (
+   INV_ID ASC
+)
+tablespace INDICESG1
+/
+
+/*==============================================================*/
 /* Table: LINEA_INVESTIGACION                                   */
 /*==============================================================*/
 create table LINEA_INVESTIGACION (
@@ -323,7 +315,6 @@ tablespace INDICESG1
 /*==============================================================*/
 create table PROFESOR (
    PRF_ID               VARCHAR2(8)           not null,
-   PRO_PRF_ID           VARCHAR2(8),
    PRF_NOMBRES          VARCHAR2(64),
    PRF_APELLIDOS        VARCHAR2(64),
    PRF_NUM_DESPACHO     INTEGER,
@@ -332,15 +323,6 @@ create table PROFESOR (
    constraint PK_PROFESOR primary key (PRF_ID)
 )
    tablespace DATOSG1
-/
-
-/*==============================================================*/
-/* Index: PROFESOR_SUPERVISA_PROFESOR_FK                        */
-/*==============================================================*/
-create index PROFESOR_SUPERVISA_PROFESOR_FK on PROFESOR (
-   PRO_PRF_ID ASC
-)
-tablespace INDICESG1
 /
 
 /*==============================================================*/
@@ -375,66 +357,12 @@ tablespace INDICESG1
 /
 
 /*==============================================================*/
-/* Table: PROFESOR_LINEA                                        */
-/*==============================================================*/
-create table PROFESOR_LINEA (
-   PRF_ID               VARCHAR2(8)           not null,
-   LNINV_ID             VARCHAR2(8)           not null
-)
-   tablespace DATOSG1
-/
-
-/*==============================================================*/
-/* Index: PROFESOR_DISPONE_PROFESOR_LINE                        */
-/*==============================================================*/
-create index PROFESOR_DISPONE_PROFESOR_LINE on PROFESOR_LINEA (
-   PRF_ID ASC
-)
-tablespace INDICESG1
-/
-
-/*==============================================================*/
-/* Index: LINEA_ESTA_PROFESOR_LINEA_FK                          */
-/*==============================================================*/
-create index LINEA_ESTA_PROFESOR_LINEA_FK on PROFESOR_LINEA (
-   LNINV_ID ASC
-)
-tablespace INDICESG1
-/
-
-/*==============================================================*/
-/* Table: PROFESOR_PUBLICACION                                  */
-/*==============================================================*/
-create table PROFESOR_PUBLICACION (
-   PUB_ID               INTEGER               not null,
-   PRF_ID               VARCHAR2(8)           not null
-)
-   tablespace DATOSG1
-/
-
-/*==============================================================*/
-/* Index: PROFESOR_EFECTUA_PROFESOR_PUBL                        */
-/*==============================================================*/
-create index PROFESOR_EFECTUA_PROFESOR_PUBL on PROFESOR_PUBLICACION (
-   PRF_ID ASC
-)
-tablespace INDICESG1
-/
-
-/*==============================================================*/
-/* Index: PUBLICACION_ESTA_PUBLICACION_P                        */
-/*==============================================================*/
-create index PUBLICACION_ESTA_PUBLICACION_P on PROFESOR_PUBLICACION (
-   PUB_ID ASC
-)
-tablespace INDICESG1
-/
-
-/*==============================================================*/
 /* Table: PUBLICACION                                           */
 /*==============================================================*/
 create table PUBLICACION (
    PUB_ID               INTEGER               not null,
+   CON_ID               VARCHAR2(8)           not null,
+   REV_ID               VARCHAR2(8)           not null,
    INV_ID               VARCHAR2(8)           not null,
    PUB_TITULO           VARCHAR2(40),
    constraint PK_PUBLICACION primary key (PUB_ID)
@@ -452,59 +380,19 @@ tablespace INDICESG1
 /
 
 /*==============================================================*/
-/* Table: PUBLICACION_CONGRESO                                  */
+/* Index: REVISTA_PUBLICA_PUBLICACION_FK                        */
 /*==============================================================*/
-create table PUBLICACION_CONGRESO (
-   CON_ID               VARCHAR2(8)           not null,
-   PUB_ID               INTEGER               not null
-)
-   tablespace DATOSG1
-/
-
-/*==============================================================*/
-/* Index: PUBLICACION_POSEE_PUBLICACION_                        */
-/*==============================================================*/
-create index PUBLICACION_POSEE_PUBLICACION_ on PUBLICACION_CONGRESO (
-   PUB_ID ASC
-)
-tablespace INDICESG1
-/
-
-/*==============================================================*/
-/* Index: CONGRESO_REALIZA_PUBLICACION_C                        */
-/*==============================================================*/
-create index CONGRESO_REALIZA_PUBLICACION_C on PUBLICACION_CONGRESO (
-   CON_ID ASC
-)
-tablespace INDICESG1
-/
-
-/*==============================================================*/
-/* Table: PUBLICACION_REVISTA                                   */
-/*==============================================================*/
-create table PUBLICACION_REVISTA (
-   PUB_ID               INTEGER               not null,
-   REV_ID               VARCHAR2(8)           not null,
-   PUBREV_PAG_INICIO    INTEGER,
-   PUBREV_PAG_FIN       INTEGER
-)
-   tablespace DATOSG1
-/
-
-/*==============================================================*/
-/* Index: PUBLICACION_TIENE_PUBLICACION_                        */
-/*==============================================================*/
-create index PUBLICACION_TIENE_PUBLICACION_ on PUBLICACION_REVISTA (
-   PUB_ID ASC
-)
-tablespace INDICESG1
-/
-
-/*==============================================================*/
-/* Index: REVISTA_HACE_PUBLICACION_REVIS                        */
-/*==============================================================*/
-create index REVISTA_HACE_PUBLICACION_REVIS on PUBLICACION_REVISTA (
+create index REVISTA_PUBLICA_PUBLICACION_FK on PUBLICACION (
    REV_ID ASC
+)
+tablespace INDICESG1
+/
+
+/*==============================================================*/
+/* Index: CONGRESO_PRODUCE_PUBLICACION_F                        */
+/*==============================================================*/
+create index CONGRESO_PRODUCE_PUBLICACION_F on PUBLICACION (
+   CON_ID ASC
 )
 tablespace INDICESG1
 /
@@ -518,7 +406,20 @@ create table REVISTA (
    REV_EDITORIAL        VARCHAR2(40),
    REV_VOLUMEN          INTEGER,
    REV_NUMERO           INTEGER,
+   REV_PAG_INICIO       INTEGER,
+   REV_PAG_FIN          INTEGER,
    constraint PK_REVISTA primary key (REV_ID)
+)
+   tablespace DATOSG1
+/
+
+/*==============================================================*/
+/* Table: SUPERVISOR                                            */
+/*==============================================================*/
+create table SUPERVISOR (
+   SUP_ID               VARCHAR2(8)           not null,
+   SUP_NOMBRE           VARCHAR2(64),
+   constraint PK_SUPERVISOR primary key (SUP_ID)
 )
    tablespace DATOSG1
 /
@@ -532,22 +433,22 @@ declare
     errmsg           char(200);
     dummy            integer;
     found            boolean;
-    --  Declaration of DeleteParentRestrict constraint for "PUBLICACION_CONGRESO"
-    cursor cfk1_publicacion_congreso(var_con_id varchar) is
+    --  Declaration of DeleteParentRestrict constraint for "PUBLICACION"
+    cursor cfk1_publicacion(var_con_id varchar) is
        select 1
-       from   PUBLICACION_CONGRESO
+       from   PUBLICACION
        where  CON_ID = var_con_id
         and   var_con_id is not null;
 
 begin
-    --  Cannot delete parent "CONGRESO" if children still exist in "PUBLICACION_CONGRESO"
-    open  cfk1_publicacion_congreso(:old.CON_ID);
-    fetch cfk1_publicacion_congreso into dummy;
-    found := cfk1_publicacion_congreso%FOUND;
-    close cfk1_publicacion_congreso;
+    --  Cannot delete parent "CONGRESO" if children still exist in "PUBLICACION"
+    open  cfk1_publicacion(:old.CON_ID);
+    fetch cfk1_publicacion into dummy;
+    found := cfk1_publicacion%FOUND;
+    close cfk1_publicacion;
     if found then
        errno  := -20006;
-       errmsg := 'Children still exist in "PUBLICACION_CONGRESO". Cannot delete parent "CONGRESO".';
+       errmsg := 'Children still exist in "PUBLICACION". Cannot delete parent "CONGRESO".';
        raise integrity_error;
     end if;
 
@@ -569,23 +470,23 @@ declare
     errmsg           char(200);
     dummy            integer;
     found            boolean;
-    --  Declaration of UpdateParentRestrict constraint for "PUBLICACION_CONGRESO"
-    cursor cfk1_publicacion_congreso(var_con_id varchar) is
+    --  Declaration of UpdateParentRestrict constraint for "PUBLICACION"
+    cursor cfk1_publicacion(var_con_id varchar) is
        select 1
-       from   PUBLICACION_CONGRESO
+       from   PUBLICACION
        where  CON_ID = var_con_id
         and   var_con_id is not null;
 
 begin
-    --  Cannot modify parent code in "CONGRESO" if children still exist in "PUBLICACION_CONGRESO"
+    --  Cannot modify parent code in "CONGRESO" if children still exist in "PUBLICACION"
     if (updating('CON_ID') and :old.CON_ID != :new.CON_ID) then
-       open  cfk1_publicacion_congreso(:old.CON_ID);
-       fetch cfk1_publicacion_congreso into dummy;
-       found := cfk1_publicacion_congreso%FOUND;
-       close cfk1_publicacion_congreso;
+       open  cfk1_publicacion(:old.CON_ID);
+       fetch cfk1_publicacion into dummy;
+       found := cfk1_publicacion%FOUND;
+       close cfk1_publicacion;
        if found then
           errno  := -20005;
-          errmsg := 'Children still exist in "PUBLICACION_CONGRESO". Cannot modify parent code in "CONGRESO".';
+          errmsg := 'Children still exist in "PUBLICACION". Cannot modify parent code in "CONGRESO".';
           raise integrity_error;
        end if;
     end if;
@@ -812,6 +713,12 @@ declare
        from   PUBLICACION
        where  INV_ID = var_inv_id
         and   var_inv_id is not null;
+    --  Declaration of DeleteParentRestrict constraint for "INVESTIGACION_SUPERVISOR"
+    cursor cfk3_investigacion_supervisor(var_inv_id varchar) is
+       select 1
+       from   INVESTIGACION_SUPERVISOR
+       where  INV_ID = var_inv_id
+        and   var_inv_id is not null;
 
 begin
     --  Cannot delete parent "INVESTIGACION" if children still exist in "PROFESOR_INVESTIGACION"
@@ -833,6 +740,17 @@ begin
     if found then
        errno  := -20006;
        errmsg := 'Children still exist in "PUBLICACION". Cannot delete parent "INVESTIGACION".';
+       raise integrity_error;
+    end if;
+
+    --  Cannot delete parent "INVESTIGACION" if children still exist in "INVESTIGACION_SUPERVISOR"
+    open  cfk3_investigacion_supervisor(:old.INV_ID);
+    fetch cfk3_investigacion_supervisor into dummy;
+    found := cfk3_investigacion_supervisor%FOUND;
+    close cfk3_investigacion_supervisor;
+    if found then
+       errno  := -20006;
+       errmsg := 'Children still exist in "INVESTIGACION_SUPERVISOR". Cannot delete parent "INVESTIGACION".';
        raise integrity_error;
     end if;
 
@@ -866,6 +784,12 @@ declare
        from   PUBLICACION
        where  INV_ID = var_inv_id
         and   var_inv_id is not null;
+    --  Declaration of UpdateParentRestrict constraint for "INVESTIGACION_SUPERVISOR"
+    cursor cfk3_investigacion_supervisor(var_inv_id varchar) is
+       select 1
+       from   INVESTIGACION_SUPERVISOR
+       where  INV_ID = var_inv_id
+        and   var_inv_id is not null;
 
 begin
     --  Cannot modify parent code in "INVESTIGACION" if children still exist in "PROFESOR_INVESTIGACION"
@@ -894,6 +818,137 @@ begin
        end if;
     end if;
 
+    --  Cannot modify parent code in "INVESTIGACION" if children still exist in "INVESTIGACION_SUPERVISOR"
+    if (updating('INV_ID') and :old.INV_ID != :new.INV_ID) then
+       open  cfk3_investigacion_supervisor(:old.INV_ID);
+       fetch cfk3_investigacion_supervisor into dummy;
+       found := cfk3_investigacion_supervisor%FOUND;
+       close cfk3_investigacion_supervisor;
+       if found then
+          errno  := -20005;
+          errmsg := 'Children still exist in "INVESTIGACION_SUPERVISOR". Cannot modify parent code in "INVESTIGACION".';
+          raise integrity_error;
+       end if;
+    end if;
+
+
+--  Errors handling
+exception
+    when integrity_error then
+       raise_application_error(errno, errmsg);
+end;
+/
+
+
+create trigger TIB_INVESTIGACION_SUPERVISOR before insert
+on INVESTIGACION_SUPERVISOR for each row
+declare
+    integrity_error  exception;
+    errno            integer;
+    errmsg           char(200);
+    dummy            integer;
+    found            boolean;
+    --  Declaration of InsertChildParentExist constraint for the parent "SUPERVISOR"
+    cursor cpk1_investigacion_supervisor(var_sup_id varchar) is
+       select 1
+       from   SUPERVISOR
+       where  SUP_ID = var_sup_id
+        and   var_sup_id is not null;
+    --  Declaration of InsertChildParentExist constraint for the parent "INVESTIGACION"
+    cursor cpk2_investigacion_supervisor(var_inv_id varchar) is
+       select 1
+       from   INVESTIGACION
+       where  INV_ID = var_inv_id
+        and   var_inv_id is not null;
+
+begin
+    --  Parent "SUPERVISOR" must exist when inserting a child in "INVESTIGACION_SUPERVISOR"
+    if :new.SUP_ID is not null then
+       open  cpk1_investigacion_supervisor(:new.SUP_ID);
+       fetch cpk1_investigacion_supervisor into dummy;
+       found := cpk1_investigacion_supervisor%FOUND;
+       close cpk1_investigacion_supervisor;
+       if not found then
+          errno  := -20002;
+          errmsg := 'Parent does not exist in "SUPERVISOR". Cannot create child in "INVESTIGACION_SUPERVISOR".';
+          raise integrity_error;
+       end if;
+    end if;
+
+    --  Parent "INVESTIGACION" must exist when inserting a child in "INVESTIGACION_SUPERVISOR"
+    if :new.INV_ID is not null then
+       open  cpk2_investigacion_supervisor(:new.INV_ID);
+       fetch cpk2_investigacion_supervisor into dummy;
+       found := cpk2_investigacion_supervisor%FOUND;
+       close cpk2_investigacion_supervisor;
+       if not found then
+          errno  := -20002;
+          errmsg := 'Parent does not exist in "INVESTIGACION". Cannot create child in "INVESTIGACION_SUPERVISOR".';
+          raise integrity_error;
+       end if;
+    end if;
+
+
+--  Errors handling
+exception
+    when integrity_error then
+       raise_application_error(errno, errmsg);
+end;
+/
+
+
+create trigger TUB_INVESTIGACION_SUPERVISOR before update
+of SUP_ID,
+   INV_ID
+on INVESTIGACION_SUPERVISOR for each row
+declare
+    integrity_error  exception;
+    errno            integer;
+    errmsg           char(200);
+    dummy            integer;
+    found            boolean;
+    seq NUMBER;
+    --  Declaration of UpdateChildParentExist constraint for the parent "SUPERVISOR"
+    cursor cpk1_investigacion_supervisor(var_sup_id varchar) is
+       select 1
+       from   SUPERVISOR
+       where  SUP_ID = var_sup_id
+        and   var_sup_id is not null;
+    --  Declaration of UpdateChildParentExist constraint for the parent "INVESTIGACION"
+    cursor cpk2_investigacion_supervisor(var_inv_id varchar) is
+       select 1
+       from   INVESTIGACION
+       where  INV_ID = var_inv_id
+        and   var_inv_id is not null;
+
+begin
+    seq := IntegrityPackage.GetNestLevel;
+    --  Parent "SUPERVISOR" must exist when updating a child in "INVESTIGACION_SUPERVISOR"
+    if (:new.SUP_ID is not null) and (seq = 0) then
+       open  cpk1_investigacion_supervisor(:new.SUP_ID);
+       fetch cpk1_investigacion_supervisor into dummy;
+       found := cpk1_investigacion_supervisor%FOUND;
+       close cpk1_investigacion_supervisor;
+       if not found then
+          errno  := -20003;
+          errmsg := 'Parent does not exist in "SUPERVISOR". Cannot update child in "INVESTIGACION_SUPERVISOR".';
+          raise integrity_error;
+       end if;
+    end if;
+
+    --  Parent "INVESTIGACION" must exist when updating a child in "INVESTIGACION_SUPERVISOR"
+    if (:new.INV_ID is not null) and (seq = 0) then
+       open  cpk2_investigacion_supervisor(:new.INV_ID);
+       fetch cpk2_investigacion_supervisor into dummy;
+       found := cpk2_investigacion_supervisor%FOUND;
+       close cpk2_investigacion_supervisor;
+       if not found then
+          errno  := -20003;
+          errmsg := 'Parent does not exist in "INVESTIGACION". Cannot update child in "INVESTIGACION_SUPERVISOR".';
+          raise integrity_error;
+       end if;
+    end if;
+
 
 --  Errors handling
 exception
@@ -917,12 +972,6 @@ declare
        from   DESCRIPTOR_LINEA
        where  LNINV_ID = var_lninv_id
         and   var_lninv_id is not null;
-    --  Declaration of DeleteParentRestrict constraint for "PROFESOR_LINEA"
-    cursor cfk2_profesor_linea(var_lninv_id varchar) is
-       select 1
-       from   PROFESOR_LINEA
-       where  LNINV_ID = var_lninv_id
-        and   var_lninv_id is not null;
 
 begin
     --  Cannot delete parent "LINEA_INVESTIGACION" if children still exist in "DESCRIPTOR_LINEA"
@@ -933,17 +982,6 @@ begin
     if found then
        errno  := -20006;
        errmsg := 'Children still exist in "DESCRIPTOR_LINEA". Cannot delete parent "LINEA_INVESTIGACION".';
-       raise integrity_error;
-    end if;
-
-    --  Cannot delete parent "LINEA_INVESTIGACION" if children still exist in "PROFESOR_LINEA"
-    open  cfk2_profesor_linea(:old.LNINV_ID);
-    fetch cfk2_profesor_linea into dummy;
-    found := cfk2_profesor_linea%FOUND;
-    close cfk2_profesor_linea;
-    if found then
-       errno  := -20006;
-       errmsg := 'Children still exist in "PROFESOR_LINEA". Cannot delete parent "LINEA_INVESTIGACION".';
        raise integrity_error;
     end if;
 
@@ -1017,12 +1055,6 @@ declare
        from   DESCRIPTOR_LINEA
        where  LNINV_ID = var_lninv_id
         and   var_lninv_id is not null;
-    --  Declaration of UpdateParentRestrict constraint for "PROFESOR_LINEA"
-    cursor cfk2_profesor_linea(var_lninv_id varchar) is
-       select 1
-       from   PROFESOR_LINEA
-       where  LNINV_ID = var_lninv_id
-        and   var_lninv_id is not null;
 
 begin
     seq := IntegrityPackage.GetNestLevel;
@@ -1052,19 +1084,6 @@ begin
        end if;
     end if;
 
-    --  Cannot modify parent code in "LINEA_INVESTIGACION" if children still exist in "PROFESOR_LINEA"
-    if (updating('LNINV_ID') and :old.LNINV_ID != :new.LNINV_ID) then
-       open  cfk2_profesor_linea(:old.LNINV_ID);
-       fetch cfk2_profesor_linea into dummy;
-       found := cfk2_profesor_linea%FOUND;
-       close cfk2_profesor_linea;
-       if found then
-          errno  := -20005;
-          errmsg := 'Children still exist in "PROFESOR_LINEA". Cannot modify parent code in "LINEA_INVESTIGACION".';
-          raise integrity_error;
-       end if;
-    end if;
-
 
 --  Errors handling
 exception
@@ -1088,24 +1107,6 @@ declare
        from   PROFESOR_INVESTIGACION
        where  PRF_ID = var_prf_id
         and   var_prf_id is not null;
-    --  Declaration of DeleteParentRestrict constraint for "PROFESOR_LINEA"
-    cursor cfk2_profesor_linea(var_prf_id varchar) is
-       select 1
-       from   PROFESOR_LINEA
-       where  PRF_ID = var_prf_id
-        and   var_prf_id is not null;
-    --  Declaration of DeleteParentRestrict constraint for "PROFESOR_PUBLICACION"
-    cursor cfk3_profesor_publicacion(var_prf_id varchar) is
-       select 1
-       from   PROFESOR_PUBLICACION
-       where  PRF_ID = var_prf_id
-        and   var_prf_id is not null;
-    --  Declaration of DeleteParentRestrict constraint for "PROFESOR"
-    cursor cfk4_profesor(var_prf_id varchar) is
-       select 1
-       from   PROFESOR
-       where  PRO_PRF_ID = var_prf_id
-        and   var_prf_id is not null;
 
 begin
     --  Cannot delete parent "PROFESOR" if children still exist in "PROFESOR_INVESTIGACION"
@@ -1119,77 +1120,6 @@ begin
        raise integrity_error;
     end if;
 
-    --  Cannot delete parent "PROFESOR" if children still exist in "PROFESOR_LINEA"
-    open  cfk2_profesor_linea(:old.PRF_ID);
-    fetch cfk2_profesor_linea into dummy;
-    found := cfk2_profesor_linea%FOUND;
-    close cfk2_profesor_linea;
-    if found then
-       errno  := -20006;
-       errmsg := 'Children still exist in "PROFESOR_LINEA". Cannot delete parent "PROFESOR".';
-       raise integrity_error;
-    end if;
-
-    --  Cannot delete parent "PROFESOR" if children still exist in "PROFESOR_PUBLICACION"
-    open  cfk3_profesor_publicacion(:old.PRF_ID);
-    fetch cfk3_profesor_publicacion into dummy;
-    found := cfk3_profesor_publicacion%FOUND;
-    close cfk3_profesor_publicacion;
-    if found then
-       errno  := -20006;
-       errmsg := 'Children still exist in "PROFESOR_PUBLICACION". Cannot delete parent "PROFESOR".';
-       raise integrity_error;
-    end if;
-
-    --  Cannot delete parent "PROFESOR" if children still exist in "PROFESOR"
-    open  cfk4_profesor(:old.PRF_ID);
-    fetch cfk4_profesor into dummy;
-    found := cfk4_profesor%FOUND;
-    close cfk4_profesor;
-    if found then
-       errno  := -20006;
-       errmsg := 'Children still exist in "PROFESOR". Cannot delete parent "PROFESOR".';
-       raise integrity_error;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TIB_PROFESOR before insert
-on PROFESOR for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    --  Declaration of InsertChildParentExist constraint for the parent "PROFESOR"
-    cursor cpk1_profesor(var_pro_prf_id varchar) is
-       select 1
-       from   PROFESOR
-       where  PRF_ID = var_pro_prf_id
-        and   var_pro_prf_id is not null;
-
-begin
-    --  Parent "PROFESOR" must exist when inserting a child in "PROFESOR"
-    if :new.PRO_PRF_ID is not null then
-       open  cpk1_profesor(:new.PRO_PRF_ID);
-       fetch cpk1_profesor into dummy;
-       found := cpk1_profesor%FOUND;
-       close cpk1_profesor;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "PROFESOR". Cannot create child in "PROFESOR".';
-          raise integrity_error;
-       end if;
-    end if;
-
 
 --  Errors handling
 exception
@@ -1200,8 +1130,7 @@ end;
 
 
 create trigger TUB_PROFESOR before update
-of PRF_ID,
-   PRO_PRF_ID
+of PRF_ID
 on PROFESOR for each row
 declare
     integrity_error  exception;
@@ -1209,53 +1138,14 @@ declare
     errmsg           char(200);
     dummy            integer;
     found            boolean;
-    seq NUMBER;
-    --  Declaration of UpdateChildParentExist constraint for the parent "PROFESOR"
-    cursor cpk1_profesor(var_pro_prf_id varchar) is
-       select 1
-       from   PROFESOR
-       where  PRF_ID = var_pro_prf_id
-        and   var_pro_prf_id is not null;
     --  Declaration of UpdateParentRestrict constraint for "PROFESOR_INVESTIGACION"
     cursor cfk1_profesor_investigacion(var_prf_id varchar) is
        select 1
        from   PROFESOR_INVESTIGACION
        where  PRF_ID = var_prf_id
         and   var_prf_id is not null;
-    --  Declaration of UpdateParentRestrict constraint for "PROFESOR_LINEA"
-    cursor cfk2_profesor_linea(var_prf_id varchar) is
-       select 1
-       from   PROFESOR_LINEA
-       where  PRF_ID = var_prf_id
-        and   var_prf_id is not null;
-    --  Declaration of UpdateParentRestrict constraint for "PROFESOR_PUBLICACION"
-    cursor cfk3_profesor_publicacion(var_prf_id varchar) is
-       select 1
-       from   PROFESOR_PUBLICACION
-       where  PRF_ID = var_prf_id
-        and   var_prf_id is not null;
-    --  Declaration of UpdateParentRestrict constraint for "PROFESOR"
-    cursor cfk4_profesor(var_prf_id varchar) is
-       select 1
-       from   PROFESOR
-       where  PRO_PRF_ID = var_prf_id
-        and   var_prf_id is not null;
 
 begin
-    seq := IntegrityPackage.GetNestLevel;
-    --  Parent "PROFESOR" must exist when updating a child in "PROFESOR"
-    if (:new.PRO_PRF_ID is not null) and (seq = 0) then
-       open  cpk1_profesor(:new.PRO_PRF_ID);
-       fetch cpk1_profesor into dummy;
-       found := cpk1_profesor%FOUND;
-       close cpk1_profesor;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "PROFESOR". Cannot update child in "PROFESOR".';
-          raise integrity_error;
-       end if;
-    end if;
-
     --  Cannot modify parent code in "PROFESOR" if children still exist in "PROFESOR_INVESTIGACION"
     if (updating('PRF_ID') and :old.PRF_ID != :new.PRF_ID) then
        open  cfk1_profesor_investigacion(:old.PRF_ID);
@@ -1265,45 +1155,6 @@ begin
        if found then
           errno  := -20005;
           errmsg := 'Children still exist in "PROFESOR_INVESTIGACION". Cannot modify parent code in "PROFESOR".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Cannot modify parent code in "PROFESOR" if children still exist in "PROFESOR_LINEA"
-    if (updating('PRF_ID') and :old.PRF_ID != :new.PRF_ID) then
-       open  cfk2_profesor_linea(:old.PRF_ID);
-       fetch cfk2_profesor_linea into dummy;
-       found := cfk2_profesor_linea%FOUND;
-       close cfk2_profesor_linea;
-       if found then
-          errno  := -20005;
-          errmsg := 'Children still exist in "PROFESOR_LINEA". Cannot modify parent code in "PROFESOR".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Cannot modify parent code in "PROFESOR" if children still exist in "PROFESOR_PUBLICACION"
-    if (updating('PRF_ID') and :old.PRF_ID != :new.PRF_ID) then
-       open  cfk3_profesor_publicacion(:old.PRF_ID);
-       fetch cfk3_profesor_publicacion into dummy;
-       found := cfk3_profesor_publicacion%FOUND;
-       close cfk3_profesor_publicacion;
-       if found then
-          errno  := -20005;
-          errmsg := 'Children still exist in "PROFESOR_PUBLICACION". Cannot modify parent code in "PROFESOR".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Cannot modify parent code in "PROFESOR" if children still exist in "PROFESOR"
-    if (updating('PRF_ID') and :old.PRF_ID != :new.PRF_ID) then
-       open  cfk4_profesor(:old.PRF_ID);
-       fetch cfk4_profesor into dummy;
-       found := cfk4_profesor%FOUND;
-       close cfk4_profesor;
-       if found then
-          errno  := -20005;
-          errmsg := 'Children still exist in "PROFESOR". Cannot modify parent code in "PROFESOR".';
           raise integrity_error;
        end if;
     end if;
@@ -1443,242 +1294,6 @@ end;
 /
 
 
-create trigger TIB_PROFESOR_LINEA before insert
-on PROFESOR_LINEA for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    --  Declaration of InsertChildParentExist constraint for the parent "PROFESOR"
-    cursor cpk1_profesor_linea(var_prf_id varchar) is
-       select 1
-       from   PROFESOR
-       where  PRF_ID = var_prf_id
-        and   var_prf_id is not null;
-    --  Declaration of InsertChildParentExist constraint for the parent "LINEA_INVESTIGACION"
-    cursor cpk2_profesor_linea(var_lninv_id varchar) is
-       select 1
-       from   LINEA_INVESTIGACION
-       where  LNINV_ID = var_lninv_id
-        and   var_lninv_id is not null;
-
-begin
-    --  Parent "PROFESOR" must exist when inserting a child in "PROFESOR_LINEA"
-    if :new.PRF_ID is not null then
-       open  cpk1_profesor_linea(:new.PRF_ID);
-       fetch cpk1_profesor_linea into dummy;
-       found := cpk1_profesor_linea%FOUND;
-       close cpk1_profesor_linea;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "PROFESOR". Cannot create child in "PROFESOR_LINEA".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Parent "LINEA_INVESTIGACION" must exist when inserting a child in "PROFESOR_LINEA"
-    if :new.LNINV_ID is not null then
-       open  cpk2_profesor_linea(:new.LNINV_ID);
-       fetch cpk2_profesor_linea into dummy;
-       found := cpk2_profesor_linea%FOUND;
-       close cpk2_profesor_linea;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "LINEA_INVESTIGACION". Cannot create child in "PROFESOR_LINEA".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TUB_PROFESOR_LINEA before update
-of PRF_ID,
-   LNINV_ID
-on PROFESOR_LINEA for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    seq NUMBER;
-    --  Declaration of UpdateChildParentExist constraint for the parent "PROFESOR"
-    cursor cpk1_profesor_linea(var_prf_id varchar) is
-       select 1
-       from   PROFESOR
-       where  PRF_ID = var_prf_id
-        and   var_prf_id is not null;
-    --  Declaration of UpdateChildParentExist constraint for the parent "LINEA_INVESTIGACION"
-    cursor cpk2_profesor_linea(var_lninv_id varchar) is
-       select 1
-       from   LINEA_INVESTIGACION
-       where  LNINV_ID = var_lninv_id
-        and   var_lninv_id is not null;
-
-begin
-    seq := IntegrityPackage.GetNestLevel;
-    --  Parent "PROFESOR" must exist when updating a child in "PROFESOR_LINEA"
-    if (:new.PRF_ID is not null) and (seq = 0) then
-       open  cpk1_profesor_linea(:new.PRF_ID);
-       fetch cpk1_profesor_linea into dummy;
-       found := cpk1_profesor_linea%FOUND;
-       close cpk1_profesor_linea;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "PROFESOR". Cannot update child in "PROFESOR_LINEA".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Parent "LINEA_INVESTIGACION" must exist when updating a child in "PROFESOR_LINEA"
-    if (:new.LNINV_ID is not null) and (seq = 0) then
-       open  cpk2_profesor_linea(:new.LNINV_ID);
-       fetch cpk2_profesor_linea into dummy;
-       found := cpk2_profesor_linea%FOUND;
-       close cpk2_profesor_linea;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "LINEA_INVESTIGACION". Cannot update child in "PROFESOR_LINEA".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TIB_PROFESOR_PUBLICACION before insert
-on PROFESOR_PUBLICACION for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    --  Declaration of InsertChildParentExist constraint for the parent "PROFESOR"
-    cursor cpk1_profesor_publicacion(var_prf_id varchar) is
-       select 1
-       from   PROFESOR
-       where  PRF_ID = var_prf_id
-        and   var_prf_id is not null;
-    --  Declaration of InsertChildParentExist constraint for the parent "PUBLICACION"
-    cursor cpk2_profesor_publicacion(var_pub_id integer) is
-       select 1
-       from   PUBLICACION
-       where  PUB_ID = var_pub_id
-        and   var_pub_id is not null;
-
-begin
-    --  Parent "PROFESOR" must exist when inserting a child in "PROFESOR_PUBLICACION"
-    if :new.PRF_ID is not null then
-       open  cpk1_profesor_publicacion(:new.PRF_ID);
-       fetch cpk1_profesor_publicacion into dummy;
-       found := cpk1_profesor_publicacion%FOUND;
-       close cpk1_profesor_publicacion;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "PROFESOR". Cannot create child in "PROFESOR_PUBLICACION".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Parent "PUBLICACION" must exist when inserting a child in "PROFESOR_PUBLICACION"
-    if :new.PUB_ID is not null then
-       open  cpk2_profesor_publicacion(:new.PUB_ID);
-       fetch cpk2_profesor_publicacion into dummy;
-       found := cpk2_profesor_publicacion%FOUND;
-       close cpk2_profesor_publicacion;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "PUBLICACION". Cannot create child in "PROFESOR_PUBLICACION".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TUB_PROFESOR_PUBLICACION before update
-of PUB_ID,
-   PRF_ID
-on PROFESOR_PUBLICACION for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    seq NUMBER;
-    --  Declaration of UpdateChildParentExist constraint for the parent "PROFESOR"
-    cursor cpk1_profesor_publicacion(var_prf_id varchar) is
-       select 1
-       from   PROFESOR
-       where  PRF_ID = var_prf_id
-        and   var_prf_id is not null;
-    --  Declaration of UpdateChildParentExist constraint for the parent "PUBLICACION"
-    cursor cpk2_profesor_publicacion(var_pub_id integer) is
-       select 1
-       from   PUBLICACION
-       where  PUB_ID = var_pub_id
-        and   var_pub_id is not null;
-
-begin
-    seq := IntegrityPackage.GetNestLevel;
-    --  Parent "PROFESOR" must exist when updating a child in "PROFESOR_PUBLICACION"
-    if (:new.PRF_ID is not null) and (seq = 0) then
-       open  cpk1_profesor_publicacion(:new.PRF_ID);
-       fetch cpk1_profesor_publicacion into dummy;
-       found := cpk1_profesor_publicacion%FOUND;
-       close cpk1_profesor_publicacion;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "PROFESOR". Cannot update child in "PROFESOR_PUBLICACION".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Parent "PUBLICACION" must exist when updating a child in "PROFESOR_PUBLICACION"
-    if (:new.PUB_ID is not null) and (seq = 0) then
-       open  cpk2_profesor_publicacion(:new.PUB_ID);
-       fetch cpk2_profesor_publicacion into dummy;
-       found := cpk2_profesor_publicacion%FOUND;
-       close cpk2_profesor_publicacion;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "PUBLICACION". Cannot update child in "PROFESOR_PUBLICACION".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
 create trigger TDB_PUBLICACION before delete
 on PUBLICACION for each row
 declare
@@ -1687,73 +1302,22 @@ declare
     errmsg           char(200);
     dummy            integer;
     found            boolean;
-    --  Declaration of DeleteParentRestrict constraint for "PUBLICACION_CONGRESO"
-    cursor cfk1_publicacion_congreso(var_pub_id integer) is
-       select 1
-       from   PUBLICACION_CONGRESO
-       where  PUB_ID = var_pub_id
-        and   var_pub_id is not null;
-    --  Declaration of DeleteParentRestrict constraint for "PUBLICACION_REVISTA"
-    cursor cfk2_publicacion_revista(var_pub_id integer) is
-       select 1
-       from   PUBLICACION_REVISTA
-       where  PUB_ID = var_pub_id
-        and   var_pub_id is not null;
     --  Declaration of DeleteParentRestrict constraint for "LINEA_INVESTIGACION"
-    cursor cfk3_linea_investigacion(var_pub_id integer) is
+    cursor cfk1_linea_investigacion(var_pub_id integer) is
        select 1
        from   LINEA_INVESTIGACION
        where  PUB_ID = var_pub_id
         and   var_pub_id is not null;
-    --  Declaration of DeleteParentRestrict constraint for "PROFESOR_PUBLICACION"
-    cursor cfk4_profesor_publicacion(var_pub_id integer) is
-       select 1
-       from   PROFESOR_PUBLICACION
-       where  PUB_ID = var_pub_id
-        and   var_pub_id is not null;
 
 begin
-    --  Cannot delete parent "PUBLICACION" if children still exist in "PUBLICACION_CONGRESO"
-    open  cfk1_publicacion_congreso(:old.PUB_ID);
-    fetch cfk1_publicacion_congreso into dummy;
-    found := cfk1_publicacion_congreso%FOUND;
-    close cfk1_publicacion_congreso;
-    if found then
-       errno  := -20006;
-       errmsg := 'Children still exist in "PUBLICACION_CONGRESO". Cannot delete parent "PUBLICACION".';
-       raise integrity_error;
-    end if;
-
-    --  Cannot delete parent "PUBLICACION" if children still exist in "PUBLICACION_REVISTA"
-    open  cfk2_publicacion_revista(:old.PUB_ID);
-    fetch cfk2_publicacion_revista into dummy;
-    found := cfk2_publicacion_revista%FOUND;
-    close cfk2_publicacion_revista;
-    if found then
-       errno  := -20006;
-       errmsg := 'Children still exist in "PUBLICACION_REVISTA". Cannot delete parent "PUBLICACION".';
-       raise integrity_error;
-    end if;
-
     --  Cannot delete parent "PUBLICACION" if children still exist in "LINEA_INVESTIGACION"
-    open  cfk3_linea_investigacion(:old.PUB_ID);
-    fetch cfk3_linea_investigacion into dummy;
-    found := cfk3_linea_investigacion%FOUND;
-    close cfk3_linea_investigacion;
+    open  cfk1_linea_investigacion(:old.PUB_ID);
+    fetch cfk1_linea_investigacion into dummy;
+    found := cfk1_linea_investigacion%FOUND;
+    close cfk1_linea_investigacion;
     if found then
        errno  := -20006;
        errmsg := 'Children still exist in "LINEA_INVESTIGACION". Cannot delete parent "PUBLICACION".';
-       raise integrity_error;
-    end if;
-
-    --  Cannot delete parent "PUBLICACION" if children still exist in "PROFESOR_PUBLICACION"
-    open  cfk4_profesor_publicacion(:old.PUB_ID);
-    fetch cfk4_profesor_publicacion into dummy;
-    found := cfk4_profesor_publicacion%FOUND;
-    close cfk4_profesor_publicacion;
-    if found then
-       errno  := -20006;
-       errmsg := 'Children still exist in "PROFESOR_PUBLICACION". Cannot delete parent "PUBLICACION".';
        raise integrity_error;
     end if;
 
@@ -1780,6 +1344,18 @@ declare
        from   INVESTIGACION
        where  INV_ID = var_inv_id
         and   var_inv_id is not null;
+    --  Declaration of InsertChildParentExist constraint for the parent "REVISTA"
+    cursor cpk2_publicacion(var_rev_id varchar) is
+       select 1
+       from   REVISTA
+       where  REV_ID = var_rev_id
+        and   var_rev_id is not null;
+    --  Declaration of InsertChildParentExist constraint for the parent "CONGRESO"
+    cursor cpk3_publicacion(var_con_id varchar) is
+       select 1
+       from   CONGRESO
+       where  CON_ID = var_con_id
+        and   var_con_id is not null;
 
 begin
     --  Parent "INVESTIGACION" must exist when inserting a child in "PUBLICACION"
@@ -1795,6 +1371,32 @@ begin
        end if;
     end if;
 
+    --  Parent "REVISTA" must exist when inserting a child in "PUBLICACION"
+    if :new.REV_ID is not null then
+       open  cpk2_publicacion(:new.REV_ID);
+       fetch cpk2_publicacion into dummy;
+       found := cpk2_publicacion%FOUND;
+       close cpk2_publicacion;
+       if not found then
+          errno  := -20002;
+          errmsg := 'Parent does not exist in "REVISTA". Cannot create child in "PUBLICACION".';
+          raise integrity_error;
+       end if;
+    end if;
+
+    --  Parent "CONGRESO" must exist when inserting a child in "PUBLICACION"
+    if :new.CON_ID is not null then
+       open  cpk3_publicacion(:new.CON_ID);
+       fetch cpk3_publicacion into dummy;
+       found := cpk3_publicacion%FOUND;
+       close cpk3_publicacion;
+       if not found then
+          errno  := -20002;
+          errmsg := 'Parent does not exist in "CONGRESO". Cannot create child in "PUBLICACION".';
+          raise integrity_error;
+       end if;
+    end if;
+
 
 --  Errors handling
 exception
@@ -1806,6 +1408,8 @@ end;
 
 create trigger TUB_PUBLICACION before update
 of PUB_ID,
+   CON_ID,
+   REV_ID,
    INV_ID
 on PUBLICACION for each row
 declare
@@ -1821,28 +1425,22 @@ declare
        from   INVESTIGACION
        where  INV_ID = var_inv_id
         and   var_inv_id is not null;
-    --  Declaration of UpdateParentRestrict constraint for "PUBLICACION_CONGRESO"
-    cursor cfk1_publicacion_congreso(var_pub_id integer) is
+    --  Declaration of UpdateChildParentExist constraint for the parent "REVISTA"
+    cursor cpk2_publicacion(var_rev_id varchar) is
        select 1
-       from   PUBLICACION_CONGRESO
-       where  PUB_ID = var_pub_id
-        and   var_pub_id is not null;
-    --  Declaration of UpdateParentRestrict constraint for "PUBLICACION_REVISTA"
-    cursor cfk2_publicacion_revista(var_pub_id integer) is
+       from   REVISTA
+       where  REV_ID = var_rev_id
+        and   var_rev_id is not null;
+    --  Declaration of UpdateChildParentExist constraint for the parent "CONGRESO"
+    cursor cpk3_publicacion(var_con_id varchar) is
        select 1
-       from   PUBLICACION_REVISTA
-       where  PUB_ID = var_pub_id
-        and   var_pub_id is not null;
+       from   CONGRESO
+       where  CON_ID = var_con_id
+        and   var_con_id is not null;
     --  Declaration of UpdateParentRestrict constraint for "LINEA_INVESTIGACION"
-    cursor cfk3_linea_investigacion(var_pub_id integer) is
+    cursor cfk1_linea_investigacion(var_pub_id integer) is
        select 1
        from   LINEA_INVESTIGACION
-       where  PUB_ID = var_pub_id
-        and   var_pub_id is not null;
-    --  Declaration of UpdateParentRestrict constraint for "PROFESOR_PUBLICACION"
-    cursor cfk4_profesor_publicacion(var_pub_id integer) is
-       select 1
-       from   PROFESOR_PUBLICACION
        where  PUB_ID = var_pub_id
         and   var_pub_id is not null;
 
@@ -1861,290 +1459,41 @@ begin
        end if;
     end if;
 
-    --  Cannot modify parent code in "PUBLICACION" if children still exist in "PUBLICACION_CONGRESO"
-    if (updating('PUB_ID') and :old.PUB_ID != :new.PUB_ID) then
-       open  cfk1_publicacion_congreso(:old.PUB_ID);
-       fetch cfk1_publicacion_congreso into dummy;
-       found := cfk1_publicacion_congreso%FOUND;
-       close cfk1_publicacion_congreso;
-       if found then
-          errno  := -20005;
-          errmsg := 'Children still exist in "PUBLICACION_CONGRESO". Cannot modify parent code in "PUBLICACION".';
+    --  Parent "REVISTA" must exist when updating a child in "PUBLICACION"
+    if (:new.REV_ID is not null) and (seq = 0) then
+       open  cpk2_publicacion(:new.REV_ID);
+       fetch cpk2_publicacion into dummy;
+       found := cpk2_publicacion%FOUND;
+       close cpk2_publicacion;
+       if not found then
+          errno  := -20003;
+          errmsg := 'Parent does not exist in "REVISTA". Cannot update child in "PUBLICACION".';
           raise integrity_error;
        end if;
     end if;
 
-    --  Cannot modify parent code in "PUBLICACION" if children still exist in "PUBLICACION_REVISTA"
-    if (updating('PUB_ID') and :old.PUB_ID != :new.PUB_ID) then
-       open  cfk2_publicacion_revista(:old.PUB_ID);
-       fetch cfk2_publicacion_revista into dummy;
-       found := cfk2_publicacion_revista%FOUND;
-       close cfk2_publicacion_revista;
-       if found then
-          errno  := -20005;
-          errmsg := 'Children still exist in "PUBLICACION_REVISTA". Cannot modify parent code in "PUBLICACION".';
+    --  Parent "CONGRESO" must exist when updating a child in "PUBLICACION"
+    if (:new.CON_ID is not null) and (seq = 0) then
+       open  cpk3_publicacion(:new.CON_ID);
+       fetch cpk3_publicacion into dummy;
+       found := cpk3_publicacion%FOUND;
+       close cpk3_publicacion;
+       if not found then
+          errno  := -20003;
+          errmsg := 'Parent does not exist in "CONGRESO". Cannot update child in "PUBLICACION".';
           raise integrity_error;
        end if;
     end if;
 
     --  Cannot modify parent code in "PUBLICACION" if children still exist in "LINEA_INVESTIGACION"
     if (updating('PUB_ID') and :old.PUB_ID != :new.PUB_ID) then
-       open  cfk3_linea_investigacion(:old.PUB_ID);
-       fetch cfk3_linea_investigacion into dummy;
-       found := cfk3_linea_investigacion%FOUND;
-       close cfk3_linea_investigacion;
+       open  cfk1_linea_investigacion(:old.PUB_ID);
+       fetch cfk1_linea_investigacion into dummy;
+       found := cfk1_linea_investigacion%FOUND;
+       close cfk1_linea_investigacion;
        if found then
           errno  := -20005;
           errmsg := 'Children still exist in "LINEA_INVESTIGACION". Cannot modify parent code in "PUBLICACION".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Cannot modify parent code in "PUBLICACION" if children still exist in "PROFESOR_PUBLICACION"
-    if (updating('PUB_ID') and :old.PUB_ID != :new.PUB_ID) then
-       open  cfk4_profesor_publicacion(:old.PUB_ID);
-       fetch cfk4_profesor_publicacion into dummy;
-       found := cfk4_profesor_publicacion%FOUND;
-       close cfk4_profesor_publicacion;
-       if found then
-          errno  := -20005;
-          errmsg := 'Children still exist in "PROFESOR_PUBLICACION". Cannot modify parent code in "PUBLICACION".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TIB_PUBLICACION_CONGRESO before insert
-on PUBLICACION_CONGRESO for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    --  Declaration of InsertChildParentExist constraint for the parent "PUBLICACION"
-    cursor cpk1_publicacion_congreso(var_pub_id integer) is
-       select 1
-       from   PUBLICACION
-       where  PUB_ID = var_pub_id
-        and   var_pub_id is not null;
-    --  Declaration of InsertChildParentExist constraint for the parent "CONGRESO"
-    cursor cpk2_publicacion_congreso(var_con_id varchar) is
-       select 1
-       from   CONGRESO
-       where  CON_ID = var_con_id
-        and   var_con_id is not null;
-
-begin
-    --  Parent "PUBLICACION" must exist when inserting a child in "PUBLICACION_CONGRESO"
-    if :new.PUB_ID is not null then
-       open  cpk1_publicacion_congreso(:new.PUB_ID);
-       fetch cpk1_publicacion_congreso into dummy;
-       found := cpk1_publicacion_congreso%FOUND;
-       close cpk1_publicacion_congreso;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "PUBLICACION". Cannot create child in "PUBLICACION_CONGRESO".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Parent "CONGRESO" must exist when inserting a child in "PUBLICACION_CONGRESO"
-    if :new.CON_ID is not null then
-       open  cpk2_publicacion_congreso(:new.CON_ID);
-       fetch cpk2_publicacion_congreso into dummy;
-       found := cpk2_publicacion_congreso%FOUND;
-       close cpk2_publicacion_congreso;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "CONGRESO". Cannot create child in "PUBLICACION_CONGRESO".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TUB_PUBLICACION_CONGRESO before update
-of CON_ID,
-   PUB_ID
-on PUBLICACION_CONGRESO for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    seq NUMBER;
-    --  Declaration of UpdateChildParentExist constraint for the parent "PUBLICACION"
-    cursor cpk1_publicacion_congreso(var_pub_id integer) is
-       select 1
-       from   PUBLICACION
-       where  PUB_ID = var_pub_id
-        and   var_pub_id is not null;
-    --  Declaration of UpdateChildParentExist constraint for the parent "CONGRESO"
-    cursor cpk2_publicacion_congreso(var_con_id varchar) is
-       select 1
-       from   CONGRESO
-       where  CON_ID = var_con_id
-        and   var_con_id is not null;
-
-begin
-    seq := IntegrityPackage.GetNestLevel;
-    --  Parent "PUBLICACION" must exist when updating a child in "PUBLICACION_CONGRESO"
-    if (:new.PUB_ID is not null) and (seq = 0) then
-       open  cpk1_publicacion_congreso(:new.PUB_ID);
-       fetch cpk1_publicacion_congreso into dummy;
-       found := cpk1_publicacion_congreso%FOUND;
-       close cpk1_publicacion_congreso;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "PUBLICACION". Cannot update child in "PUBLICACION_CONGRESO".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Parent "CONGRESO" must exist when updating a child in "PUBLICACION_CONGRESO"
-    if (:new.CON_ID is not null) and (seq = 0) then
-       open  cpk2_publicacion_congreso(:new.CON_ID);
-       fetch cpk2_publicacion_congreso into dummy;
-       found := cpk2_publicacion_congreso%FOUND;
-       close cpk2_publicacion_congreso;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "CONGRESO". Cannot update child in "PUBLICACION_CONGRESO".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TIB_PUBLICACION_REVISTA before insert
-on PUBLICACION_REVISTA for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    --  Declaration of InsertChildParentExist constraint for the parent "PUBLICACION"
-    cursor cpk1_publicacion_revista(var_pub_id integer) is
-       select 1
-       from   PUBLICACION
-       where  PUB_ID = var_pub_id
-        and   var_pub_id is not null;
-    --  Declaration of InsertChildParentExist constraint for the parent "REVISTA"
-    cursor cpk2_publicacion_revista(var_rev_id varchar) is
-       select 1
-       from   REVISTA
-       where  REV_ID = var_rev_id
-        and   var_rev_id is not null;
-
-begin
-    --  Parent "PUBLICACION" must exist when inserting a child in "PUBLICACION_REVISTA"
-    if :new.PUB_ID is not null then
-       open  cpk1_publicacion_revista(:new.PUB_ID);
-       fetch cpk1_publicacion_revista into dummy;
-       found := cpk1_publicacion_revista%FOUND;
-       close cpk1_publicacion_revista;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "PUBLICACION". Cannot create child in "PUBLICACION_REVISTA".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Parent "REVISTA" must exist when inserting a child in "PUBLICACION_REVISTA"
-    if :new.REV_ID is not null then
-       open  cpk2_publicacion_revista(:new.REV_ID);
-       fetch cpk2_publicacion_revista into dummy;
-       found := cpk2_publicacion_revista%FOUND;
-       close cpk2_publicacion_revista;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "REVISTA". Cannot create child in "PUBLICACION_REVISTA".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TUB_PUBLICACION_REVISTA before update
-of PUB_ID,
-   REV_ID
-on PUBLICACION_REVISTA for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    seq NUMBER;
-    --  Declaration of UpdateChildParentExist constraint for the parent "PUBLICACION"
-    cursor cpk1_publicacion_revista(var_pub_id integer) is
-       select 1
-       from   PUBLICACION
-       where  PUB_ID = var_pub_id
-        and   var_pub_id is not null;
-    --  Declaration of UpdateChildParentExist constraint for the parent "REVISTA"
-    cursor cpk2_publicacion_revista(var_rev_id varchar) is
-       select 1
-       from   REVISTA
-       where  REV_ID = var_rev_id
-        and   var_rev_id is not null;
-
-begin
-    seq := IntegrityPackage.GetNestLevel;
-    --  Parent "PUBLICACION" must exist when updating a child in "PUBLICACION_REVISTA"
-    if (:new.PUB_ID is not null) and (seq = 0) then
-       open  cpk1_publicacion_revista(:new.PUB_ID);
-       fetch cpk1_publicacion_revista into dummy;
-       found := cpk1_publicacion_revista%FOUND;
-       close cpk1_publicacion_revista;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "PUBLICACION". Cannot update child in "PUBLICACION_REVISTA".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Parent "REVISTA" must exist when updating a child in "PUBLICACION_REVISTA"
-    if (:new.REV_ID is not null) and (seq = 0) then
-       open  cpk2_publicacion_revista(:new.REV_ID);
-       fetch cpk2_publicacion_revista into dummy;
-       found := cpk2_publicacion_revista%FOUND;
-       close cpk2_publicacion_revista;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "REVISTA". Cannot update child in "PUBLICACION_REVISTA".';
           raise integrity_error;
        end if;
     end if;
@@ -2166,22 +1515,22 @@ declare
     errmsg           char(200);
     dummy            integer;
     found            boolean;
-    --  Declaration of DeleteParentRestrict constraint for "PUBLICACION_REVISTA"
-    cursor cfk1_publicacion_revista(var_rev_id varchar) is
+    --  Declaration of DeleteParentRestrict constraint for "PUBLICACION"
+    cursor cfk1_publicacion(var_rev_id varchar) is
        select 1
-       from   PUBLICACION_REVISTA
+       from   PUBLICACION
        where  REV_ID = var_rev_id
         and   var_rev_id is not null;
 
 begin
-    --  Cannot delete parent "REVISTA" if children still exist in "PUBLICACION_REVISTA"
-    open  cfk1_publicacion_revista(:old.REV_ID);
-    fetch cfk1_publicacion_revista into dummy;
-    found := cfk1_publicacion_revista%FOUND;
-    close cfk1_publicacion_revista;
+    --  Cannot delete parent "REVISTA" if children still exist in "PUBLICACION"
+    open  cfk1_publicacion(:old.REV_ID);
+    fetch cfk1_publicacion into dummy;
+    found := cfk1_publicacion%FOUND;
+    close cfk1_publicacion;
     if found then
        errno  := -20006;
-       errmsg := 'Children still exist in "PUBLICACION_REVISTA". Cannot delete parent "REVISTA".';
+       errmsg := 'Children still exist in "PUBLICACION". Cannot delete parent "REVISTA".';
        raise integrity_error;
     end if;
 
@@ -2203,23 +1552,98 @@ declare
     errmsg           char(200);
     dummy            integer;
     found            boolean;
-    --  Declaration of UpdateParentRestrict constraint for "PUBLICACION_REVISTA"
-    cursor cfk1_publicacion_revista(var_rev_id varchar) is
+    --  Declaration of UpdateParentRestrict constraint for "PUBLICACION"
+    cursor cfk1_publicacion(var_rev_id varchar) is
        select 1
-       from   PUBLICACION_REVISTA
+       from   PUBLICACION
        where  REV_ID = var_rev_id
         and   var_rev_id is not null;
 
 begin
-    --  Cannot modify parent code in "REVISTA" if children still exist in "PUBLICACION_REVISTA"
+    --  Cannot modify parent code in "REVISTA" if children still exist in "PUBLICACION"
     if (updating('REV_ID') and :old.REV_ID != :new.REV_ID) then
-       open  cfk1_publicacion_revista(:old.REV_ID);
-       fetch cfk1_publicacion_revista into dummy;
-       found := cfk1_publicacion_revista%FOUND;
-       close cfk1_publicacion_revista;
+       open  cfk1_publicacion(:old.REV_ID);
+       fetch cfk1_publicacion into dummy;
+       found := cfk1_publicacion%FOUND;
+       close cfk1_publicacion;
        if found then
           errno  := -20005;
-          errmsg := 'Children still exist in "PUBLICACION_REVISTA". Cannot modify parent code in "REVISTA".';
+          errmsg := 'Children still exist in "PUBLICACION". Cannot modify parent code in "REVISTA".';
+          raise integrity_error;
+       end if;
+    end if;
+
+
+--  Errors handling
+exception
+    when integrity_error then
+       raise_application_error(errno, errmsg);
+end;
+/
+
+
+create trigger TDB_SUPERVISOR before delete
+on SUPERVISOR for each row
+declare
+    integrity_error  exception;
+    errno            integer;
+    errmsg           char(200);
+    dummy            integer;
+    found            boolean;
+    --  Declaration of DeleteParentRestrict constraint for "INVESTIGACION_SUPERVISOR"
+    cursor cfk1_investigacion_supervisor(var_sup_id varchar) is
+       select 1
+       from   INVESTIGACION_SUPERVISOR
+       where  SUP_ID = var_sup_id
+        and   var_sup_id is not null;
+
+begin
+    --  Cannot delete parent "SUPERVISOR" if children still exist in "INVESTIGACION_SUPERVISOR"
+    open  cfk1_investigacion_supervisor(:old.SUP_ID);
+    fetch cfk1_investigacion_supervisor into dummy;
+    found := cfk1_investigacion_supervisor%FOUND;
+    close cfk1_investigacion_supervisor;
+    if found then
+       errno  := -20006;
+       errmsg := 'Children still exist in "INVESTIGACION_SUPERVISOR". Cannot delete parent "SUPERVISOR".';
+       raise integrity_error;
+    end if;
+
+
+--  Errors handling
+exception
+    when integrity_error then
+       raise_application_error(errno, errmsg);
+end;
+/
+
+
+create trigger TUB_SUPERVISOR before update
+of SUP_ID
+on SUPERVISOR for each row
+declare
+    integrity_error  exception;
+    errno            integer;
+    errmsg           char(200);
+    dummy            integer;
+    found            boolean;
+    --  Declaration of UpdateParentRestrict constraint for "INVESTIGACION_SUPERVISOR"
+    cursor cfk1_investigacion_supervisor(var_sup_id varchar) is
+       select 1
+       from   INVESTIGACION_SUPERVISOR
+       where  SUP_ID = var_sup_id
+        and   var_sup_id is not null;
+
+begin
+    --  Cannot modify parent code in "SUPERVISOR" if children still exist in "INVESTIGACION_SUPERVISOR"
+    if (updating('SUP_ID') and :old.SUP_ID != :new.SUP_ID) then
+       open  cfk1_investigacion_supervisor(:old.SUP_ID);
+       fetch cfk1_investigacion_supervisor into dummy;
+       found := cfk1_investigacion_supervisor%FOUND;
+       close cfk1_investigacion_supervisor;
+       if found then
+          errno  := -20005;
+          errmsg := 'Children still exist in "INVESTIGACION_SUPERVISOR". Cannot modify parent code in "SUPERVISOR".';
           raise integrity_error;
        end if;
     end if;
