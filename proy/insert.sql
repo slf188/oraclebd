@@ -118,6 +118,7 @@ insert into investigacion_supervisor values ('SUP-2', 'INV-2');
 
 insert into profesor values ('PRF-1', 'Ivan', 'Moyota', 1, '123456789', 'Matematicas');
 insert into profesor values ('PRF-2', 'Patricio', 'Santillan', 2, '987654321', 'Ciencias Sociales');
+insert into profesor values ('PRF-3', 'Xavier', 'Chavez', 3, '123456789', 'Quimica');
 
 insert into profesor_investigacion values ('PRF-1', 'INV-1', to_date('01/01/2023', 'dd/mm/yyyy'), to_date('02/01/2023', 'dd/mm/yyyy'), 1);
 insert into profesor_investigacion values ('PRF-2', 'INV-2', to_date('03/01/2023', 'dd/mm/yyyy'), to_date('04/01/2023', 'dd/mm/yyyy'), 0);
