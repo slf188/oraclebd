@@ -44,3 +44,19 @@ begin
     end if;
 end;
 /
+
+-- trigger que unicamente permita que prvfinv_es_lider en profesor_investigacion sea 1 cuando el profesor sea doctor en prf_titulacion
+create or replace trigger lider_doctor
+before insert or update on profesor_investigacion
+for each row
+declare
+    v_titulacion profesor.PRF_TITULACION%type;
+begin
+   if :new.PRFINV_ES_LIDER = 1 then
+        select PRF_TITULACION into v_titulacion from profesor where PRF_ID = :new.PRF_ID;
+        if v_titulacion != 'Doctor' then
+            raise_application_error(-20000, 'El profesor debe ser doctor para ser lider');
+        end if;
+   end if;
+end;
+/
