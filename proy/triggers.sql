@@ -19,3 +19,17 @@ begin
     end if;
 end;
 /
+
+-- trigger que no permita ingresar profesor si ya existe un lider en la investigacion
+create or replace trigger lider_investigacion
+before insert on profesor_investigacion
+for each row
+declare
+    lider number;
+begin
+      select count(*) into lider from profesor_investigacion where inv_id = :new.inv_id and prfinv_es_lider = 1;
+      if lider > 0 and :new.prfinv_es_lider = 1 then
+         raise_application_error(-20000, 'Ya existe un lider en la investigacion');
+      end if;
+end;
+/
