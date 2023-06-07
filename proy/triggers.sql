@@ -33,3 +33,14 @@ begin
       end if;
 end;
 /
+
+-- trigger que unicamente que PRF_TITULACION en profesor solo permita Doctor o No Doctor
+create or replace trigger titulacion_doctor
+before insert or update on profesor
+for each row
+begin
+    if :new.PRF_TITULACION not in ('Doctor', 'No Doctor') then
+        raise_application_error(-20000, 'La titulacion del profesor debe ser Doctor o No Doctor');
+    end if;
+end;
+/
