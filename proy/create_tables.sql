@@ -23,6 +23,7 @@ create table DESCRIPTOR_LINEA (
 
 create table INVESTIGACION (
    INV_ID               VARCHAR2(8)           not null,
+   SUP_ID               VARCHAR2(8),
    INV_NOMBRE           VARCHAR2(64),
    INV_ACRONIMO         VARCHAR2(10),
    INV_DESCRIPCION      VARCHAR2(200),
