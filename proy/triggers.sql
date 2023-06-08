@@ -20,6 +20,7 @@ begin
 end;
 /
 
+-- arreglar de aqui en adelante
 -- trigger que no permita ingresar profesor si ya existe un lider en la investigacion
 create or replace trigger lider_investigacion
 before insert on profesor_investigacion
