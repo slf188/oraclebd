@@ -14,8 +14,6 @@ insert into publicacion values (2, 'CON-2', 'REV-2', 'INV-2', 'Titulo 2');
 insert into linea_investigacion values ('LNINV-1', 1, 'Linea 1');
 insert into linea_investigacion values ('LNINV-2', 2, 'Linea 2');
 
-desc linea_investigacion;
-
 insert into descriptor_linea values ('DESC-1', 'LNINV-1');
 insert into descriptor_linea values ('DESC-2', 'LNINV-2');
 
