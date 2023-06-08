@@ -74,13 +74,10 @@ drop trigger TUB_DESCRIPTOR_LINEA
 drop trigger TDB_INVESTIGACION
 /
 
+drop trigger TIB_INVESTIGACION
+/
+
 drop trigger TUB_INVESTIGACION
-/
-
-drop trigger TIB_INVESTIGACION_SUPERVISOR
-/
-
-drop trigger TUB_INVESTIGACION_SUPERVISOR
 /
 
 drop trigger TDB_LINEA_INVESTIGACION
@@ -141,15 +138,6 @@ drop table DESCRIPTOR_LINEA cascade constraints
 /
 
 drop table INVESTIGACION cascade constraints
-/
-
-drop index INVESTIGACION_ESTA_INVESTIGACI
-/
-
-drop index SUPERVISOR_SUPERVISA_INVESTIGA
-/
-
-drop table INVESTIGACION_SUPERVISOR cascade constraints
 /
 
 drop index PUBLICACION_INCLUYE_LINEA_INVE
@@ -249,6 +237,7 @@ tablespace INDICESG1
 /*==============================================================*/
 create table INVESTIGACION (
    INV_ID               VARCHAR2(8)           not null,
+   SUP_ID               VARCHAR2(8),
    INV_NOMBRE           VARCHAR2(64),
    INV_ACRONIMO         VARCHAR2(10),
    INV_DESCRIPCION      VARCHAR2(200),
@@ -259,34 +248,6 @@ create table INVESTIGACION (
    constraint PK_INVESTIGACION primary key (INV_ID)
 )
    tablespace DATOSG1
-/
-
-/*==============================================================*/
-/* Table: INVESTIGACION_SUPERVISOR                              */
-/*==============================================================*/
-create table INVESTIGACION_SUPERVISOR (
-   SUP_ID               VARCHAR2(8)           not null,
-   INV_ID               VARCHAR2(8)           not null
-)
-   tablespace DATOSG1
-/
-
-/*==============================================================*/
-/* Index: SUPERVISOR_SUPERVISA_INVESTIGA                        */
-/*==============================================================*/
-create index SUPERVISOR_SUPERVISA_INVESTIGA on INVESTIGACION_SUPERVISOR (
-   SUP_ID ASC
-)
-tablespace INDICESG1
-/
-
-/*==============================================================*/
-/* Index: INVESTIGACION_ESTA_INVESTIGACI                        */
-/*==============================================================*/
-create index INVESTIGACION_ESTA_INVESTIGACI on INVESTIGACION_SUPERVISOR (
-   INV_ID ASC
-)
-tablespace INDICESG1
 /
 
 /*==============================================================*/
@@ -332,8 +293,7 @@ create table PROFESOR_INVESTIGACION (
    PRF_ID               VARCHAR2(8)           not null,
    INV_ID               VARCHAR2(8)           not null,
    PRFINV_FECHA_INICIO  DATE,
-   PRFINV_FECHA_FIN     DATE,
-   PRFINV_ES_LIDER      NUMBER
+   PRFINV_FECHA_FIN     DATE
 )
    tablespace DATOSG1
 /
@@ -418,7 +378,9 @@ create table REVISTA (
 /*==============================================================*/
 create table SUPERVISOR (
    SUP_ID               VARCHAR2(8)           not null,
-   SUP_NOMBRE           VARCHAR2(64),
+   PRF_APELLIDOS        VARCHAR2(64),
+   SUP_NOMBRES          VARCHAR2(64),
+   SUP_TITULACION       VARCHAR(40),
    constraint PK_SUPERVISOR primary key (SUP_ID)
 )
    tablespace DATOSG1
@@ -713,12 +675,6 @@ declare
        from   PUBLICACION
        where  INV_ID = var_inv_id
         and   var_inv_id is not null;
-    --  Declaration of DeleteParentRestrict constraint for "INVESTIGACION_SUPERVISOR"
-    cursor cfk3_investigacion_supervisor(var_inv_id varchar) is
-       select 1
-       from   INVESTIGACION_SUPERVISOR
-       where  INV_ID = var_inv_id
-        and   var_inv_id is not null;
 
 begin
     --  Cannot delete parent "INVESTIGACION" if children still exist in "PROFESOR_INVESTIGACION"
@@ -743,15 +699,42 @@ begin
        raise integrity_error;
     end if;
 
-    --  Cannot delete parent "INVESTIGACION" if children still exist in "INVESTIGACION_SUPERVISOR"
-    open  cfk3_investigacion_supervisor(:old.INV_ID);
-    fetch cfk3_investigacion_supervisor into dummy;
-    found := cfk3_investigacion_supervisor%FOUND;
-    close cfk3_investigacion_supervisor;
-    if found then
-       errno  := -20006;
-       errmsg := 'Children still exist in "INVESTIGACION_SUPERVISOR". Cannot delete parent "INVESTIGACION".';
-       raise integrity_error;
+
+--  Errors handling
+exception
+    when integrity_error then
+       raise_application_error(errno, errmsg);
+end;
+/
+
+
+create trigger TIB_INVESTIGACION before insert
+on INVESTIGACION for each row
+declare
+    integrity_error  exception;
+    errno            integer;
+    errmsg           char(200);
+    dummy            integer;
+    found            boolean;
+    --  Declaration of InsertChildParentExist constraint for the parent "SUPERVISOR"
+    cursor cpk1_investigacion(var_sup_id varchar) is
+       select 1
+       from   SUPERVISOR
+       where  SUP_ID = var_sup_id
+        and   var_sup_id is not null;
+
+begin
+    --  Parent "SUPERVISOR" must exist when inserting a child in "INVESTIGACION"
+    if :new.SUP_ID is not null then
+       open  cpk1_investigacion(:new.SUP_ID);
+       fetch cpk1_investigacion into dummy;
+       found := cpk1_investigacion%FOUND;
+       close cpk1_investigacion;
+       if not found then
+          errno  := -20002;
+          errmsg := 'Parent does not exist in "SUPERVISOR". Cannot create child in "INVESTIGACION".';
+          raise integrity_error;
+       end if;
     end if;
 
 
@@ -764,7 +747,8 @@ end;
 
 
 create trigger TUB_INVESTIGACION before update
-of INV_ID
+of INV_ID,
+   SUP_ID
 on INVESTIGACION for each row
 declare
     integrity_error  exception;
@@ -772,6 +756,13 @@ declare
     errmsg           char(200);
     dummy            integer;
     found            boolean;
+    seq NUMBER;
+    --  Declaration of UpdateChildParentExist constraint for the parent "SUPERVISOR"
+    cursor cpk1_investigacion(var_sup_id varchar) is
+       select 1
+       from   SUPERVISOR
+       where  SUP_ID = var_sup_id
+        and   var_sup_id is not null;
     --  Declaration of UpdateParentRestrict constraint for "PROFESOR_INVESTIGACION"
     cursor cfk1_profesor_investigacion(var_inv_id varchar) is
        select 1
@@ -784,14 +775,22 @@ declare
        from   PUBLICACION
        where  INV_ID = var_inv_id
         and   var_inv_id is not null;
-    --  Declaration of UpdateParentRestrict constraint for "INVESTIGACION_SUPERVISOR"
-    cursor cfk3_investigacion_supervisor(var_inv_id varchar) is
-       select 1
-       from   INVESTIGACION_SUPERVISOR
-       where  INV_ID = var_inv_id
-        and   var_inv_id is not null;
 
 begin
+    seq := IntegrityPackage.GetNestLevel;
+    --  Parent "SUPERVISOR" must exist when updating a child in "INVESTIGACION"
+    if (:new.SUP_ID is not null) and (seq = 0) then
+       open  cpk1_investigacion(:new.SUP_ID);
+       fetch cpk1_investigacion into dummy;
+       found := cpk1_investigacion%FOUND;
+       close cpk1_investigacion;
+       if not found then
+          errno  := -20003;
+          errmsg := 'Parent does not exist in "SUPERVISOR". Cannot update child in "INVESTIGACION".';
+          raise integrity_error;
+       end if;
+    end if;
+
     --  Cannot modify parent code in "INVESTIGACION" if children still exist in "PROFESOR_INVESTIGACION"
     if (updating('INV_ID') and :old.INV_ID != :new.INV_ID) then
        open  cfk1_profesor_investigacion(:old.INV_ID);
@@ -814,137 +813,6 @@ begin
        if found then
           errno  := -20005;
           errmsg := 'Children still exist in "PUBLICACION". Cannot modify parent code in "INVESTIGACION".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Cannot modify parent code in "INVESTIGACION" if children still exist in "INVESTIGACION_SUPERVISOR"
-    if (updating('INV_ID') and :old.INV_ID != :new.INV_ID) then
-       open  cfk3_investigacion_supervisor(:old.INV_ID);
-       fetch cfk3_investigacion_supervisor into dummy;
-       found := cfk3_investigacion_supervisor%FOUND;
-       close cfk3_investigacion_supervisor;
-       if found then
-          errno  := -20005;
-          errmsg := 'Children still exist in "INVESTIGACION_SUPERVISOR". Cannot modify parent code in "INVESTIGACION".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TIB_INVESTIGACION_SUPERVISOR before insert
-on INVESTIGACION_SUPERVISOR for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    --  Declaration of InsertChildParentExist constraint for the parent "SUPERVISOR"
-    cursor cpk1_investigacion_supervisor(var_sup_id varchar) is
-       select 1
-       from   SUPERVISOR
-       where  SUP_ID = var_sup_id
-        and   var_sup_id is not null;
-    --  Declaration of InsertChildParentExist constraint for the parent "INVESTIGACION"
-    cursor cpk2_investigacion_supervisor(var_inv_id varchar) is
-       select 1
-       from   INVESTIGACION
-       where  INV_ID = var_inv_id
-        and   var_inv_id is not null;
-
-begin
-    --  Parent "SUPERVISOR" must exist when inserting a child in "INVESTIGACION_SUPERVISOR"
-    if :new.SUP_ID is not null then
-       open  cpk1_investigacion_supervisor(:new.SUP_ID);
-       fetch cpk1_investigacion_supervisor into dummy;
-       found := cpk1_investigacion_supervisor%FOUND;
-       close cpk1_investigacion_supervisor;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "SUPERVISOR". Cannot create child in "INVESTIGACION_SUPERVISOR".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Parent "INVESTIGACION" must exist when inserting a child in "INVESTIGACION_SUPERVISOR"
-    if :new.INV_ID is not null then
-       open  cpk2_investigacion_supervisor(:new.INV_ID);
-       fetch cpk2_investigacion_supervisor into dummy;
-       found := cpk2_investigacion_supervisor%FOUND;
-       close cpk2_investigacion_supervisor;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "INVESTIGACION". Cannot create child in "INVESTIGACION_SUPERVISOR".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TUB_INVESTIGACION_SUPERVISOR before update
-of SUP_ID,
-   INV_ID
-on INVESTIGACION_SUPERVISOR for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    seq NUMBER;
-    --  Declaration of UpdateChildParentExist constraint for the parent "SUPERVISOR"
-    cursor cpk1_investigacion_supervisor(var_sup_id varchar) is
-       select 1
-       from   SUPERVISOR
-       where  SUP_ID = var_sup_id
-        and   var_sup_id is not null;
-    --  Declaration of UpdateChildParentExist constraint for the parent "INVESTIGACION"
-    cursor cpk2_investigacion_supervisor(var_inv_id varchar) is
-       select 1
-       from   INVESTIGACION
-       where  INV_ID = var_inv_id
-        and   var_inv_id is not null;
-
-begin
-    seq := IntegrityPackage.GetNestLevel;
-    --  Parent "SUPERVISOR" must exist when updating a child in "INVESTIGACION_SUPERVISOR"
-    if (:new.SUP_ID is not null) and (seq = 0) then
-       open  cpk1_investigacion_supervisor(:new.SUP_ID);
-       fetch cpk1_investigacion_supervisor into dummy;
-       found := cpk1_investigacion_supervisor%FOUND;
-       close cpk1_investigacion_supervisor;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "SUPERVISOR". Cannot update child in "INVESTIGACION_SUPERVISOR".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Parent "INVESTIGACION" must exist when updating a child in "INVESTIGACION_SUPERVISOR"
-    if (:new.INV_ID is not null) and (seq = 0) then
-       open  cpk2_investigacion_supervisor(:new.INV_ID);
-       fetch cpk2_investigacion_supervisor into dummy;
-       found := cpk2_investigacion_supervisor%FOUND;
-       close cpk2_investigacion_supervisor;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "INVESTIGACION". Cannot update child in "INVESTIGACION_SUPERVISOR".';
           raise integrity_error;
        end if;
     end if;
@@ -1227,8 +1095,7 @@ end;
 
 create trigger TUB_PROFESOR_INVESTIGACION before update
 of PRF_ID,
-   INV_ID,
-   PRFINV_ES_LIDER
+   INV_ID
 on PROFESOR_INVESTIGACION for each row
 declare
     integrity_error  exception;
@@ -1251,13 +1118,6 @@ declare
         and   var_inv_id is not null;
 
 begin
-    --  Non modifiable column "PRFINV_ES_LIDER" cannot be modified
-    if updating('PRFINV_ES_LIDER') and :old.PRFINV_ES_LIDER != :new.PRFINV_ES_LIDER then
-       errno  := -20001;
-       errmsg := 'Non modifiable column "PRFINV_ES_LIDER" cannot be modified.';
-       raise integrity_error;
-    end if;
-
     seq := IntegrityPackage.GetNestLevel;
     --  Parent "PROFESOR" must exist when updating a child in "PROFESOR_INVESTIGACION"
     if (:new.PRF_ID is not null) and (seq = 0) then
@@ -1590,22 +1450,22 @@ declare
     errmsg           char(200);
     dummy            integer;
     found            boolean;
-    --  Declaration of DeleteParentRestrict constraint for "INVESTIGACION_SUPERVISOR"
-    cursor cfk1_investigacion_supervisor(var_sup_id varchar) is
+    --  Declaration of DeleteParentRestrict constraint for "INVESTIGACION"
+    cursor cfk1_investigacion(var_sup_id varchar) is
        select 1
-       from   INVESTIGACION_SUPERVISOR
+       from   INVESTIGACION
        where  SUP_ID = var_sup_id
         and   var_sup_id is not null;
 
 begin
-    --  Cannot delete parent "SUPERVISOR" if children still exist in "INVESTIGACION_SUPERVISOR"
-    open  cfk1_investigacion_supervisor(:old.SUP_ID);
-    fetch cfk1_investigacion_supervisor into dummy;
-    found := cfk1_investigacion_supervisor%FOUND;
-    close cfk1_investigacion_supervisor;
+    --  Cannot delete parent "SUPERVISOR" if children still exist in "INVESTIGACION"
+    open  cfk1_investigacion(:old.SUP_ID);
+    fetch cfk1_investigacion into dummy;
+    found := cfk1_investigacion%FOUND;
+    close cfk1_investigacion;
     if found then
        errno  := -20006;
-       errmsg := 'Children still exist in "INVESTIGACION_SUPERVISOR". Cannot delete parent "SUPERVISOR".';
+       errmsg := 'Children still exist in "INVESTIGACION". Cannot delete parent "SUPERVISOR".';
        raise integrity_error;
     end if;
 
@@ -1627,23 +1487,23 @@ declare
     errmsg           char(200);
     dummy            integer;
     found            boolean;
-    --  Declaration of UpdateParentRestrict constraint for "INVESTIGACION_SUPERVISOR"
-    cursor cfk1_investigacion_supervisor(var_sup_id varchar) is
+    --  Declaration of UpdateParentRestrict constraint for "INVESTIGACION"
+    cursor cfk1_investigacion(var_sup_id varchar) is
        select 1
-       from   INVESTIGACION_SUPERVISOR
+       from   INVESTIGACION
        where  SUP_ID = var_sup_id
         and   var_sup_id is not null;
 
 begin
-    --  Cannot modify parent code in "SUPERVISOR" if children still exist in "INVESTIGACION_SUPERVISOR"
+    --  Cannot modify parent code in "SUPERVISOR" if children still exist in "INVESTIGACION"
     if (updating('SUP_ID') and :old.SUP_ID != :new.SUP_ID) then
-       open  cfk1_investigacion_supervisor(:old.SUP_ID);
-       fetch cfk1_investigacion_supervisor into dummy;
-       found := cfk1_investigacion_supervisor%FOUND;
-       close cfk1_investigacion_supervisor;
+       open  cfk1_investigacion(:old.SUP_ID);
+       fetch cfk1_investigacion into dummy;
+       found := cfk1_investigacion%FOUND;
+       close cfk1_investigacion;
        if found then
           errno  := -20005;
-          errmsg := 'Children still exist in "INVESTIGACION_SUPERVISOR". Cannot modify parent code in "SUPERVISOR".';
+          errmsg := 'Children still exist in "INVESTIGACION". Cannot modify parent code in "SUPERVISOR".';
           raise integrity_error;
        end if;
     end if;
