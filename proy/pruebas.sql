@@ -18,9 +18,10 @@ insert into profesor_investigacion values ('PRF-3', 'INV-1', to_date('05/01/2023
 
 -- titulacion_doctor
 -- no pasa
-insert into profesor values ('PRF-4', 'Xavier', 'Chavez', 4, '123456789', 'Otro');
+insert into profesor values ('PRF-4', 'Damian', 'Nicolalde', 4, '123456789', 'Otro');
 -- pasa
 insert into profesor values ('PRF-4', 'Damian', 'Nicolalde', 4, '123456789', 'Doctor');
+insert into profesor values ('PRF-5', 'Henry', 'Roa', 5, '123456789', 'no doctor');
 
 -- lider_doctor
 -- no pasa
