@@ -5,7 +5,10 @@ insert into congreso values ('CON-3', 'Congreso 3', 'Otro', to_date('01/01/2023'
 insert into congreso values ('CON-3', 'Congreso 3', 'nacional', to_date('01/01/2023', 'dd/mm/yyyy'), to_date('02/01/2023', 'dd/mm/yyyy'), 'Barcelona', 'España', 'Editorial 3');
 
 -- trigger paginas_revista
+-- no pasa
 insert into revista values ('REV-3', 'Revista 4', 'Editorial 4', 4, 4, 8, 6);
+-- pasa
+insert into revista values ('REV-3', 'Revista 4', 'Editorial 4', 4, 4, 8, 16);
 
 -- trigger lider_investigacion
 -- no pasa
