@@ -1,0 +1,11 @@
+-- desc
+desc congreso;
+desc descriptor;
+desc investigacion;
+desc publicacion;
+desc linea_investigacion;
+desc descriptor_linea;
+desc supervisor;
+desc profesor;
+desc profesor_investigacion;
+desc revista;
