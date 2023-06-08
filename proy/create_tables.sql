@@ -54,8 +54,7 @@ create table PROFESOR_INVESTIGACION (
    PRF_ID               VARCHAR2(8)           not null,
    INV_ID               VARCHAR2(8)           not null,
    PRFINV_FECHA_INICIO  DATE,
-   PRFINV_FECHA_FIN     DATE,
-   PRFINV_ES_LIDER      NUMBER
+   PRFINV_FECHA_FIN     DATE
 )
 
 create table PUBLICACION (
@@ -80,6 +79,8 @@ create table REVISTA (
 
 create table SUPERVISOR (
    SUP_ID               VARCHAR2(8)           not null,
-   SUP_NOMBRE           VARCHAR2(64),
+   PRF_APELLIDOS        VARCHAR2(64),
+   SUP_NOMBRES          VARCHAR2(64),
+   SUP_TITULACION       VARCHAR(40),
    constraint PK_SUPERVISOR primary key (SUP_ID)
 )
