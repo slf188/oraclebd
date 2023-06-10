@@ -168,3 +168,6 @@ drop table PUBLICACION_REVISTA cascade constraints
 
 drop table REVISTA cascade constraints
 /
+
+drop table SUPERVISOR cascade constraints
+/
