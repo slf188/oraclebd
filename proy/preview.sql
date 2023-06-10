@@ -59,18 +59,6 @@ drop trigger TDB_CONGRESO
 drop trigger TUB_CONGRESO
 /
 
-drop trigger TDB_DESCRIPTOR
-/
-
-drop trigger TUB_DESCRIPTOR
-/
-
-drop trigger TIB_DESCRIPTOR_LINEA
-/
-
-drop trigger TUB_DESCRIPTOR_LINEA
-/
-
 drop trigger TDB_INVESTIGACION
 /
 
@@ -78,15 +66,6 @@ drop trigger TIB_INVESTIGACION
 /
 
 drop trigger TUB_INVESTIGACION
-/
-
-drop trigger TDB_LINEA_INVESTIGACION
-/
-
-drop trigger TIB_LINEA_INVESTIGACION
-/
-
-drop trigger TUB_LINEA_INVESTIGACION
 /
 
 drop trigger TDB_PROFESOR
@@ -123,18 +102,6 @@ drop trigger TUB_SUPERVISOR
 /
 
 drop table CONGRESO cascade constraints
-/
-
-drop table DESCRIPTOR cascade constraints
-/
-
-drop index DESCRIPTOR_ESTA_DESCRIPTOR_LIN
-/
-
-drop index LINEA_ABARCA_DESCRIPTOR_LINEA_
-/
-
-drop table DESCRIPTOR_LINEA cascade constraints
 /
 
 drop table INVESTIGACION cascade constraints
@@ -194,45 +161,6 @@ create table CONGRESO (
 /
 
 /*==============================================================*/
-/* Table: DESCRIPTOR                                            */
-/*==============================================================*/
-create table DESCRIPTOR (
-   DESC_ID              VARCHAR2(8)           not null,
-   DESC_NOMBRE          VARCHAR2(64),
-   constraint PK_DESCRIPTOR primary key (DESC_ID)
-)
-   tablespace DATOSG1
-/
-
-/*==============================================================*/
-/* Table: DESCRIPTOR_LINEA                                      */
-/*==============================================================*/
-create table DESCRIPTOR_LINEA (
-   DESC_ID              VARCHAR2(8)           not null,
-   LNINV_ID             VARCHAR2(8)           not null
-)
-   tablespace DATOSG1
-/
-
-/*==============================================================*/
-/* Index: LINEA_ABARCA_DESCRIPTOR_LINEA_                        */
-/*==============================================================*/
-create index LINEA_ABARCA_DESCRIPTOR_LINEA_ on DESCRIPTOR_LINEA (
-   LNINV_ID ASC
-)
-tablespace INDICESG1
-/
-
-/*==============================================================*/
-/* Index: DESCRIPTOR_ESTA_DESCRIPTOR_LIN                        */
-/*==============================================================*/
-create index DESCRIPTOR_ESTA_DESCRIPTOR_LIN on DESCRIPTOR_LINEA (
-   DESC_ID ASC
-)
-tablespace INDICESG1
-/
-
-/*==============================================================*/
 /* Table: INVESTIGACION                                         */
 /*==============================================================*/
 create table INVESTIGACION (
@@ -257,6 +185,7 @@ create table LINEA_INVESTIGACION (
    LNINV_ID             VARCHAR2(8)           not null,
    PUB_ID               INTEGER               not null,
    LNINV_NOMBRE         VARCHAR2(10),
+   LNINV_DESCRIPTORES   VARCHAR2(150),
    constraint PK_LINEA_INVESTIGACION primary key (LNINV_ID)
 )
    tablespace DATOSG1
@@ -293,7 +222,8 @@ create table PROFESOR_INVESTIGACION (
    PRF_ID               VARCHAR2(8)           not null,
    INV_ID               VARCHAR2(8)           not null,
    PRFINV_FECHA_INICIO  DATE,
-   PRFINV_FECHA_FIN     DATE
+   PRFINV_FECHA_FIN     DATE,
+   PRFINV_ES_LIDER      NUMBER
 )
    tablespace DATOSG1
 /
@@ -378,9 +308,6 @@ create table REVISTA (
 /*==============================================================*/
 create table SUPERVISOR (
    SUP_ID               VARCHAR2(8)           not null,
-   PRF_APELLIDOS        VARCHAR2(64),
-   SUP_NOMBRES          VARCHAR2(64),
-   SUP_TITULACION       VARCHAR(40),
    constraint PK_SUPERVISOR primary key (SUP_ID)
 )
    tablespace DATOSG1
@@ -449,199 +376,6 @@ begin
        if found then
           errno  := -20005;
           errmsg := 'Children still exist in "PUBLICACION". Cannot modify parent code in "CONGRESO".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TDB_DESCRIPTOR before delete
-on DESCRIPTOR for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    --  Declaration of DeleteParentRestrict constraint for "DESCRIPTOR_LINEA"
-    cursor cfk1_descriptor_linea(var_desc_id varchar) is
-       select 1
-       from   DESCRIPTOR_LINEA
-       where  DESC_ID = var_desc_id
-        and   var_desc_id is not null;
-
-begin
-    --  Cannot delete parent "DESCRIPTOR" if children still exist in "DESCRIPTOR_LINEA"
-    open  cfk1_descriptor_linea(:old.DESC_ID);
-    fetch cfk1_descriptor_linea into dummy;
-    found := cfk1_descriptor_linea%FOUND;
-    close cfk1_descriptor_linea;
-    if found then
-       errno  := -20006;
-       errmsg := 'Children still exist in "DESCRIPTOR_LINEA". Cannot delete parent "DESCRIPTOR".';
-       raise integrity_error;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TUB_DESCRIPTOR before update
-of DESC_ID
-on DESCRIPTOR for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    --  Declaration of UpdateParentRestrict constraint for "DESCRIPTOR_LINEA"
-    cursor cfk1_descriptor_linea(var_desc_id varchar) is
-       select 1
-       from   DESCRIPTOR_LINEA
-       where  DESC_ID = var_desc_id
-        and   var_desc_id is not null;
-
-begin
-    --  Cannot modify parent code in "DESCRIPTOR" if children still exist in "DESCRIPTOR_LINEA"
-    if (updating('DESC_ID') and :old.DESC_ID != :new.DESC_ID) then
-       open  cfk1_descriptor_linea(:old.DESC_ID);
-       fetch cfk1_descriptor_linea into dummy;
-       found := cfk1_descriptor_linea%FOUND;
-       close cfk1_descriptor_linea;
-       if found then
-          errno  := -20005;
-          errmsg := 'Children still exist in "DESCRIPTOR_LINEA". Cannot modify parent code in "DESCRIPTOR".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TIB_DESCRIPTOR_LINEA before insert
-on DESCRIPTOR_LINEA for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    --  Declaration of InsertChildParentExist constraint for the parent "LINEA_INVESTIGACION"
-    cursor cpk1_descriptor_linea(var_lninv_id varchar) is
-       select 1
-       from   LINEA_INVESTIGACION
-       where  LNINV_ID = var_lninv_id
-        and   var_lninv_id is not null;
-    --  Declaration of InsertChildParentExist constraint for the parent "DESCRIPTOR"
-    cursor cpk2_descriptor_linea(var_desc_id varchar) is
-       select 1
-       from   DESCRIPTOR
-       where  DESC_ID = var_desc_id
-        and   var_desc_id is not null;
-
-begin
-    --  Parent "LINEA_INVESTIGACION" must exist when inserting a child in "DESCRIPTOR_LINEA"
-    if :new.LNINV_ID is not null then
-       open  cpk1_descriptor_linea(:new.LNINV_ID);
-       fetch cpk1_descriptor_linea into dummy;
-       found := cpk1_descriptor_linea%FOUND;
-       close cpk1_descriptor_linea;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "LINEA_INVESTIGACION". Cannot create child in "DESCRIPTOR_LINEA".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Parent "DESCRIPTOR" must exist when inserting a child in "DESCRIPTOR_LINEA"
-    if :new.DESC_ID is not null then
-       open  cpk2_descriptor_linea(:new.DESC_ID);
-       fetch cpk2_descriptor_linea into dummy;
-       found := cpk2_descriptor_linea%FOUND;
-       close cpk2_descriptor_linea;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "DESCRIPTOR". Cannot create child in "DESCRIPTOR_LINEA".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TUB_DESCRIPTOR_LINEA before update
-of DESC_ID,
-   LNINV_ID
-on DESCRIPTOR_LINEA for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    seq NUMBER;
-    --  Declaration of UpdateChildParentExist constraint for the parent "LINEA_INVESTIGACION"
-    cursor cpk1_descriptor_linea(var_lninv_id varchar) is
-       select 1
-       from   LINEA_INVESTIGACION
-       where  LNINV_ID = var_lninv_id
-        and   var_lninv_id is not null;
-    --  Declaration of UpdateChildParentExist constraint for the parent "DESCRIPTOR"
-    cursor cpk2_descriptor_linea(var_desc_id varchar) is
-       select 1
-       from   DESCRIPTOR
-       where  DESC_ID = var_desc_id
-        and   var_desc_id is not null;
-
-begin
-    seq := IntegrityPackage.GetNestLevel;
-    --  Parent "LINEA_INVESTIGACION" must exist when updating a child in "DESCRIPTOR_LINEA"
-    if (:new.LNINV_ID is not null) and (seq = 0) then
-       open  cpk1_descriptor_linea(:new.LNINV_ID);
-       fetch cpk1_descriptor_linea into dummy;
-       found := cpk1_descriptor_linea%FOUND;
-       close cpk1_descriptor_linea;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "LINEA_INVESTIGACION". Cannot update child in "DESCRIPTOR_LINEA".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Parent "DESCRIPTOR" must exist when updating a child in "DESCRIPTOR_LINEA"
-    if (:new.DESC_ID is not null) and (seq = 0) then
-       open  cpk2_descriptor_linea(:new.DESC_ID);
-       fetch cpk2_descriptor_linea into dummy;
-       found := cpk2_descriptor_linea%FOUND;
-       close cpk2_descriptor_linea;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "DESCRIPTOR". Cannot update child in "DESCRIPTOR_LINEA".';
           raise integrity_error;
        end if;
     end if;
@@ -813,141 +547,6 @@ begin
        if found then
           errno  := -20005;
           errmsg := 'Children still exist in "PUBLICACION". Cannot modify parent code in "INVESTIGACION".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TDB_LINEA_INVESTIGACION before delete
-on LINEA_INVESTIGACION for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    --  Declaration of DeleteParentRestrict constraint for "DESCRIPTOR_LINEA"
-    cursor cfk1_descriptor_linea(var_lninv_id varchar) is
-       select 1
-       from   DESCRIPTOR_LINEA
-       where  LNINV_ID = var_lninv_id
-        and   var_lninv_id is not null;
-
-begin
-    --  Cannot delete parent "LINEA_INVESTIGACION" if children still exist in "DESCRIPTOR_LINEA"
-    open  cfk1_descriptor_linea(:old.LNINV_ID);
-    fetch cfk1_descriptor_linea into dummy;
-    found := cfk1_descriptor_linea%FOUND;
-    close cfk1_descriptor_linea;
-    if found then
-       errno  := -20006;
-       errmsg := 'Children still exist in "DESCRIPTOR_LINEA". Cannot delete parent "LINEA_INVESTIGACION".';
-       raise integrity_error;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TIB_LINEA_INVESTIGACION before insert
-on LINEA_INVESTIGACION for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    --  Declaration of InsertChildParentExist constraint for the parent "PUBLICACION"
-    cursor cpk1_linea_investigacion(var_pub_id integer) is
-       select 1
-       from   PUBLICACION
-       where  PUB_ID = var_pub_id
-        and   var_pub_id is not null;
-
-begin
-    --  Parent "PUBLICACION" must exist when inserting a child in "LINEA_INVESTIGACION"
-    if :new.PUB_ID is not null then
-       open  cpk1_linea_investigacion(:new.PUB_ID);
-       fetch cpk1_linea_investigacion into dummy;
-       found := cpk1_linea_investigacion%FOUND;
-       close cpk1_linea_investigacion;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "PUBLICACION". Cannot create child in "LINEA_INVESTIGACION".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TUB_LINEA_INVESTIGACION before update
-of LNINV_ID,
-   PUB_ID
-on LINEA_INVESTIGACION for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    seq NUMBER;
-    --  Declaration of UpdateChildParentExist constraint for the parent "PUBLICACION"
-    cursor cpk1_linea_investigacion(var_pub_id integer) is
-       select 1
-       from   PUBLICACION
-       where  PUB_ID = var_pub_id
-        and   var_pub_id is not null;
-    --  Declaration of UpdateParentRestrict constraint for "DESCRIPTOR_LINEA"
-    cursor cfk1_descriptor_linea(var_lninv_id varchar) is
-       select 1
-       from   DESCRIPTOR_LINEA
-       where  LNINV_ID = var_lninv_id
-        and   var_lninv_id is not null;
-
-begin
-    seq := IntegrityPackage.GetNestLevel;
-    --  Parent "PUBLICACION" must exist when updating a child in "LINEA_INVESTIGACION"
-    if (:new.PUB_ID is not null) and (seq = 0) then
-       open  cpk1_linea_investigacion(:new.PUB_ID);
-       fetch cpk1_linea_investigacion into dummy;
-       found := cpk1_linea_investigacion%FOUND;
-       close cpk1_linea_investigacion;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "PUBLICACION". Cannot update child in "LINEA_INVESTIGACION".';
-          raise integrity_error;
-       end if;
-    end if;
-
-    --  Cannot modify parent code in "LINEA_INVESTIGACION" if children still exist in "DESCRIPTOR_LINEA"
-    if (updating('LNINV_ID') and :old.LNINV_ID != :new.LNINV_ID) then
-       open  cfk1_descriptor_linea(:old.LNINV_ID);
-       fetch cfk1_descriptor_linea into dummy;
-       found := cfk1_descriptor_linea%FOUND;
-       close cfk1_descriptor_linea;
-       if found then
-          errno  := -20005;
-          errmsg := 'Children still exist in "DESCRIPTOR_LINEA". Cannot modify parent code in "LINEA_INVESTIGACION".';
           raise integrity_error;
        end if;
     end if;
