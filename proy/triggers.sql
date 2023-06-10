@@ -31,7 +31,6 @@ begin
 end;
 /
 
--- arreglar de aqui en adelante
 -- trigger que no permita ingresar profesor si ya existe un lider en la investigacion
 create or replace trigger lider_investigacion
 before insert on profesor_investigacion
@@ -46,6 +45,7 @@ begin
 end;
 /
 
+-- arreglar de aqui en adelante
 -- trigger que unicamente permita que prvfinv_es_lider en profesor_investigacion sea 1 cuando el profesor sea doctor en prf_titulacion
 create or replace trigger lider_doctor
 before insert or update on profesor_investigacion
