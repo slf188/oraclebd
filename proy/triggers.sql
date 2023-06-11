@@ -45,6 +45,17 @@ begin
 end;
 /
 
+-- investigacion tiene dos atributos fecha de inicio y fecha de fin, se debe validar que la fecha de inicio sea menor que la fecha de fin
+create or replace trigger fecha_investigacion
+before insert or update on investigacion
+for each row
+begin
+    if :new.INV_FECHA_INICIO >= :new.INV_FECHA_FIN then
+        raise_application_error(-20000, 'La fecha de inicio debe ser menor que la fecha de fin');
+    end if;
+end;
+/
+
 -- arreglar de aqui en adelante
 -- trigger que unicamente permita que prvfinv_es_lider en profesor_investigacion sea 1 cuando el profesor sea doctor en prf_titulacion
 create or replace trigger lider_doctor
