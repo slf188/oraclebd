@@ -40,3 +40,9 @@ insert into investigacion values ('INV-3', 'SUP-3', 'Investigacion 3', 'INV3', '
 insert into profesor_investigacion values ('PRF-4', 'INV-1', to_date('05/01/2023', 'dd/mm/yyyy'), to_date('06/01/2023', 'dd/mm/yyyy'), 0);
 -- pasa y verificar en supervisor
 insert into profesor_investigacion values ('PRF-4', 'INV-2', to_date('05/01/2023', 'dd/mm/yyyy'), to_date('06/01/2023', 'dd/mm/yyyy'), 1);
+
+-- prueba fecha_profesor_investigacion
+-- no pasa
+insert into profesor_investigacion values ('PRF-4', 'INV-1', to_date('05/01/2025', 'dd/mm/yyyy'), to_date('04/01/2023', 'dd/mm/yyyy'), 0);
+-- pasa
+insert into profesor_investigacion values ('PRF-4', 'INV-1', to_date('05/01/2023', 'dd/mm/yyyy'), to_date('06/01/2028', 'dd/mm/yyyy'), 0);
