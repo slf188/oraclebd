@@ -25,9 +25,9 @@ insert into profesor values ('PRF-5', 'Henry', 'Roa', 5, '123456789', 'no doctor
 
 -- lider_doctor
 -- no pasa
-insert into profesor_investigacion values ('PRF-4', 'INV-1', to_date('05/01/2023', 'dd/mm/yyyy'), to_date('06/01/2023', 'dd/mm/yyyy'), 1);
+insert into profesor_investigacion values ('PRF-5', 'INV-1', to_date('05/01/2023', 'dd/mm/yyyy'), to_date('06/01/2023', 'dd/mm/yyyy'), 1);
 -- pasa
-insert into profesor_investigacion values ('PRF-4', 'INV-2', to_date('05/01/2023', 'dd/mm/yyyy'), to_date('06/01/2023', 'dd/mm/yyyy'), 0);
+insert into profesor_investigacion values ('PRF-5', 'INV-2', to_date('05/01/2023', 'dd/mm/yyyy'), to_date('06/01/2023', 'dd/mm/yyyy'), 0);
 
 -- prueba fecha_investigacion
 -- no pasa
