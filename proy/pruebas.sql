@@ -50,7 +50,7 @@ insert into profesor_investigacion values ('PRF-4', 'INV-1', to_date('05/01/2023
 -- prueba fecha_fin_profesor_investigacion
 insert into investigacion values ('INV-4', 'SUP-2', 'Investigacion 4', 'INV3', 'Descripcion 4', 'Financiador 4', 4000, to_date('01/01/2023', 'dd/mm/yyyy'), to_date('01/01/2024', 'dd/mm/yyyy'));
 -- no pasa
--- verificar tambien que la fecha de inicio de la investigacion sea mayor a la fecha de inicio pasada en profesor_investigacion
+-- trigger que ayude verificar que la fecha de inicio de la investigacion sea menor a la fecha de inicio pasada en profesor_investigacion
 insert into profesor_investigacion values ('PRF-4', 'INV-4', to_date('05/01/2023', 'dd/mm/yyyy'), to_date('06/01/2024', 'dd/mm/yyyy'), 0);
 -- pasa
 insert into profesor_investigacion values ('PRF-4', 'INV-4', to_date('05/01/2023', 'dd/mm/yyyy'), to_date('06/01/2023', 'dd/mm/yyyy'), 0);
