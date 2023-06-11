@@ -109,6 +109,20 @@ begin
 end;
 /
 
+-- trigger que ayude verificar que la fecha de inicio de la investigacion sea menor a la fecha de inicio pasada en profesor_investigacion
+create or replace trigger fecha_inicio_profesor_investigacion
+before insert or update on profesor_investigacion
+for each row
+declare
+    fecha_inicio_investigacion date;
+begin
+   select inv_fecha_inicio into fecha_inicio_investigacion from investigacion where inv_id = :new.inv_id;
+   if :new.prfinv_fecha_inicio < fecha_inicio_investigacion then
+      raise_application_error(-20000, 'La fecha de inicio de la investigacion que participa el profesor no puede ser menor a la fecha de inicio de la investigacion');
+   end if;
+end;
+/
+
 -- ideas para triggers
 -- trigger que verifique que no se repita el num de despacho del profesor
 -- trigger que verifique que no se repita el telefono del profesor
