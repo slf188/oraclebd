@@ -95,6 +95,20 @@ begin
 end;
 /
 
+-- trigger que verifique que la fecha de fin de profesor_investigacion no sea mayor a la de fin en investigacion que se pasa en el segundo parametro
+create or replace trigger fecha_fin_profesor_investigacion
+before insert or update on profesor_investigacion
+for each row
+declare
+    fecha_fin_investigacion date;
+begin
+    select inv_fecha_fin into fecha_fin_investigacion from investigacion where inv_id = :new.inv_id;
+    if :new.prfinv_fecha_fin > fecha_fin_investigacion then
+      raise_application_error(-20000, 'La fecha de fin de la investigacion que participa el profesor no puede ser mayor a la fecha de fin de la investigacion');
+    end if;
+end;
+/
+
 -- ideas para triggers
 -- trigger que verifique que no se repita el num de despacho del profesor
 -- trigger que verifique que no se repita el telefono del profesor
