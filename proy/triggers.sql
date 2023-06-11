@@ -83,3 +83,14 @@ begin
     end if;
 end;
 /
+
+-- trigger que verifique que la fecha de inicio sea siempre menor a la fecha de fin en la tabla profesor_investigacion
+create or replace trigger fecha_profesor_investigacion
+before insert or update on profesor_investigacion
+for each row
+begin
+    if :new.prfinv_fecha_inicio >= :new.prfinv_fecha_fin then
+        raise_application_error(-20000, 'La fecha de inicio debe ser menor que la fecha de fin');
+    end if;
+end;
+/
