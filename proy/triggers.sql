@@ -71,3 +71,15 @@ begin
    end if;
 end;
 /
+
+-- trigger que automaticamente genere un nuevo supervisor cuando se inserte un nuevo registro en profesor_investigacion cuando prfinv_es_lider sea 1
+create or replace trigger supervisor_investigacion
+after insert on profesor_investigacion
+for each row
+-- el sup_id sera el mismo que prf_id
+begin
+    if :new.prfinv_es_lider = 1 then
+        insert into supervisor values (:new.prf_id);
+    end if;
+end;
+/
