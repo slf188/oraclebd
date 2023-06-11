@@ -98,3 +98,4 @@ end;
 -- ideas para triggers
 -- trigger que verifique que no se repita el num de despacho del profesor
 -- trigger que verifique que no se repita el telefono del profesor
+-- solo ideas esta super complicado hacer ambos de arriba :(
