@@ -62,10 +62,13 @@ drop trigger TUB_CONGRESO
 drop trigger TDB_INVESTIGACION
 /
 
-drop trigger TIB_INVESTIGACION
+drop trigger TUB_INVESTIGACION
 /
 
-drop trigger TUB_INVESTIGACION
+drop trigger TIB_LINEA_INVESTIGACION
+/
+
+drop trigger TUB_LINEA_INVESTIGACION
 /
 
 drop trigger TDB_PROFESOR
@@ -93,12 +96,6 @@ drop trigger TDB_REVISTA
 /
 
 drop trigger TUB_REVISTA
-/
-
-drop trigger TDB_SUPERVISOR
-/
-
-drop trigger TUB_SUPERVISOR
 /
 
 drop table CONGRESO cascade constraints
@@ -140,9 +137,6 @@ drop table PUBLICACION cascade constraints
 drop table REVISTA cascade constraints
 /
 
-drop table SUPERVISOR cascade constraints
-/
-
 /*==============================================================*/
 /* Table: CONGRESO                                              */
 /*==============================================================*/
@@ -160,12 +154,47 @@ create table CONGRESO (
    tablespace DATOSG1
 /
 
+comment on table CONGRESO is
+'Tabla que almacena la información de los congresos'
+/
+
+comment on column CONGRESO.CON_ID is
+'Campo que contiene el identificador único para cada congreso'
+/
+
+comment on column CONGRESO.CON_NOMBRE is
+'Campo que contiene el nombre del congreso'
+/
+
+comment on column CONGRESO.CON_TIPO is
+'Campo que contiene el tipo del congreso'
+/
+
+comment on column CONGRESO.CON_FECHA_INICIO is
+'Campo que contiene la fecha de inicio del congreso'
+/
+
+comment on column CONGRESO.CON_FECHA_FIN is
+'Campo que contiene la fecha de fin del congreso'
+/
+
+comment on column CONGRESO.CON_LUGAR_CELEBRACION is
+'Campo que contiene el lugar de celebración del congreso'
+/
+
+comment on column CONGRESO.CON_PAIS is
+'Campo que contiene el país del congreso'
+/
+
+comment on column CONGRESO.CON_EDITORIAL is
+'Campo que contiene la editorial del con la que se ha publicado las actas de congreso'
+/
+
 /*==============================================================*/
 /* Table: INVESTIGACION                                         */
 /*==============================================================*/
 create table INVESTIGACION (
    INV_ID               VARCHAR2(8)           not null,
-   SUP_ID               VARCHAR2(8),
    INV_NOMBRE           VARCHAR2(64),
    INV_ACRONIMO         VARCHAR2(10),
    INV_DESCRIPCION      VARCHAR2(200),
@@ -178,17 +207,73 @@ create table INVESTIGACION (
    tablespace DATOSG1
 /
 
+comment on table INVESTIGACION is
+'Tabla que almacena información de los proyectos de investigación'
+/
+
+comment on column INVESTIGACION.INV_ID is
+'Campo que contiene un código de referencia único para un proyecto de investigación'
+/
+
+comment on column INVESTIGACION.INV_NOMBRE is
+'Campo que contiene el nombre del proyecto de investigación'
+/
+
+comment on column INVESTIGACION.INV_ACRONIMO is
+'Campo que contiene el acrónimo del proyecto de investigación'
+/
+
+comment on column INVESTIGACION.INV_DESCRIPCION is
+'Campo que contiene la descripción del proyecto de investigación'
+/
+
+comment on column INVESTIGACION.INV_FINANCIADOR is
+'Campo que contiene el programa de I+D que financia el proyecto de investigación'
+/
+
+comment on column INVESTIGACION.INV_PRESUPUESTO is
+'Campo que contiene el presupuesto del proyecto de investigación'
+/
+
+comment on column INVESTIGACION.INV_FECHA_INICIO is
+'Campo que contiene la fecha de inicio del proyecto de investigación'
+/
+
+comment on column INVESTIGACION.INV_FECHA_FIN is
+'Campo que contiene la fecha de fin del proyecto de investigación'
+/
+
 /*==============================================================*/
 /* Table: LINEA_INVESTIGACION                                   */
 /*==============================================================*/
 create table LINEA_INVESTIGACION (
    LNINV_ID             VARCHAR2(8)           not null,
    PUB_ID               INTEGER               not null,
-   LNINV_NOMBRE         VARCHAR2(10),
+   LNINV_NOMBRE         VARCHAR2(30),
    LNINV_DESCRIPTORES   VARCHAR2(150),
    constraint PK_LINEA_INVESTIGACION primary key (LNINV_ID)
 )
    tablespace DATOSG1
+/
+
+comment on table LINEA_INVESTIGACION is
+'Tabla que almacena la información de las lineas de publicación '
+/
+
+comment on column LINEA_INVESTIGACION.LNINV_ID is
+'Campo que contiene el identificador único para cada linea de investigación'
+/
+
+comment on column LINEA_INVESTIGACION.PUB_ID is
+'Campo que contiene el identificador único para cada publicación'
+/
+
+comment on column LINEA_INVESTIGACION.LNINV_NOMBRE is
+'Campo que contiene el nombre de la linea de investigación'
+/
+
+comment on column LINEA_INVESTIGACION.LNINV_DESCRIPTORES is
+'"Campo que contiene los descriptores o palabras clave de la linea de investigación. Ej "Bases de Datos", "SGBD Relacional", "Dimension temporal", etc'
 /
 
 /*==============================================================*/
@@ -215,6 +300,34 @@ create table PROFESOR (
    tablespace DATOSG1
 /
 
+comment on table PROFESOR is
+'Tabla que almacena la información de los profesores del departamento informático de la Universidad'
+/
+
+comment on column PROFESOR.PRF_ID is
+'Campo que contiene el identificador único para cada profesor'
+/
+
+comment on column PROFESOR.PRF_NOMBRES is
+'Campo que contiene los nombres del profesor'
+/
+
+comment on column PROFESOR.PRF_APELLIDOS is
+'Campo que contiene los apellidos del profesor'
+/
+
+comment on column PROFESOR.PRF_NUM_DESPACHO is
+'Campo que contiene el número de despacho del profesor'
+/
+
+comment on column PROFESOR.PRF_TELEFONO is
+'Campo que contiene el número de telefono del profesor'
+/
+
+comment on column PROFESOR.PRF_TITULACION is
+'Campo que contiene la titulación del profesor. Ej: Doctor, Magister, etc'
+/
+
 /*==============================================================*/
 /* Table: PROFESOR_INVESTIGACION                                */
 /*==============================================================*/
@@ -223,9 +336,33 @@ create table PROFESOR_INVESTIGACION (
    INV_ID               VARCHAR2(8)           not null,
    PRFINV_FECHA_INICIO  DATE,
    PRFINV_FECHA_FIN     DATE,
-   PRFINV_ES_LIDER      NUMBER
+   PRFINV_ES_LIDER      NUMBER(1,0)
 )
    tablespace DATOSG1
+/
+
+comment on table PROFESOR_INVESTIGACION is
+'Tabla que almacena la información de los profesores que participan en proyectos de investigación'
+/
+
+comment on column PROFESOR_INVESTIGACION.PRF_ID is
+'Campo que contiene el identificador único para cada profesor'
+/
+
+comment on column PROFESOR_INVESTIGACION.INV_ID is
+'Campo que contiene un código de referencia único para un proyecto de investigación'
+/
+
+comment on column PROFESOR_INVESTIGACION.PRFINV_FECHA_INICIO is
+'Campo que contiene la fecha de inicio de la participación de un profesor en un proyecto'
+/
+
+comment on column PROFESOR_INVESTIGACION.PRFINV_FECHA_FIN is
+'Campo que contiene la fecha de fin de la participación de un profesor en un proyecto'
+/
+
+comment on column PROFESOR_INVESTIGACION.PRFINV_ES_LIDER is
+'Campo que verifica si un profesor es lider de investigación'
 /
 
 /*==============================================================*/
@@ -251,13 +388,37 @@ tablespace INDICESG1
 /*==============================================================*/
 create table PUBLICACION (
    PUB_ID               INTEGER               not null,
-   CON_ID               VARCHAR2(8)           not null,
-   REV_ID               VARCHAR2(8)           not null,
    INV_ID               VARCHAR2(8)           not null,
+   REV_ID               VARCHAR2(8)           not null,
+   CON_ID               VARCHAR2(8)           not null,
    PUB_TITULO           VARCHAR2(40),
    constraint PK_PUBLICACION primary key (PUB_ID)
 )
    tablespace DATOSG1
+/
+
+comment on table PUBLICACION is
+'Tabla que almacena la información de la publicación'
+/
+
+comment on column PUBLICACION.PUB_ID is
+'Campo que contiene el identificador único para cada publicación'
+/
+
+comment on column PUBLICACION.INV_ID is
+'Campo que contiene un código de referencia único para un proyecto de investigación'
+/
+
+comment on column PUBLICACION.REV_ID is
+'Campo que contiene el identificador único para cada revista'
+/
+
+comment on column PUBLICACION.CON_ID is
+'Campo que contiene el identificador único para cada congreso'
+/
+
+comment on column PUBLICACION.PUB_TITULO is
+'Campo que contiene el título para cada publicación'
 /
 
 /*==============================================================*/
@@ -303,14 +464,36 @@ create table REVISTA (
    tablespace DATOSG1
 /
 
-/*==============================================================*/
-/* Table: SUPERVISOR                                            */
-/*==============================================================*/
-create table SUPERVISOR (
-   SUP_ID               VARCHAR2(8)           not null,
-   constraint PK_SUPERVISOR primary key (SUP_ID)
-)
-   tablespace DATOSG1
+comment on table REVISTA is
+'Tabla que almacena la información de las revistas'
+/
+
+comment on column REVISTA.REV_ID is
+'Campo que contiene el identificador único para cada revista'
+/
+
+comment on column REVISTA.REV_NOMBRE is
+'Campo que contiene el nombre de revista'
+/
+
+comment on column REVISTA.REV_EDITORIAL is
+'Campo que contiene la editorial con la que la revista fue publicada'
+/
+
+comment on column REVISTA.REV_VOLUMEN is
+'Campo que contiene el volúmen de la revista'
+/
+
+comment on column REVISTA.REV_NUMERO is
+'Campo que contiene el número de la revista'
+/
+
+comment on column REVISTA.REV_PAG_INICIO is
+'Campo que contiene la página de inicio de la revista'
+/
+
+comment on column REVISTA.REV_PAG_FIN is
+'Campo que contiene la página de fin de la revista'
 /
 
 
@@ -442,47 +625,8 @@ end;
 /
 
 
-create trigger TIB_INVESTIGACION before insert
-on INVESTIGACION for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    --  Declaration of InsertChildParentExist constraint for the parent "SUPERVISOR"
-    cursor cpk1_investigacion(var_sup_id varchar) is
-       select 1
-       from   SUPERVISOR
-       where  SUP_ID = var_sup_id
-        and   var_sup_id is not null;
-
-begin
-    --  Parent "SUPERVISOR" must exist when inserting a child in "INVESTIGACION"
-    if :new.SUP_ID is not null then
-       open  cpk1_investigacion(:new.SUP_ID);
-       fetch cpk1_investigacion into dummy;
-       found := cpk1_investigacion%FOUND;
-       close cpk1_investigacion;
-       if not found then
-          errno  := -20002;
-          errmsg := 'Parent does not exist in "SUPERVISOR". Cannot create child in "INVESTIGACION".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
 create trigger TUB_INVESTIGACION before update
-of INV_ID,
-   SUP_ID
+of INV_ID
 on INVESTIGACION for each row
 declare
     integrity_error  exception;
@@ -490,13 +634,6 @@ declare
     errmsg           char(200);
     dummy            integer;
     found            boolean;
-    seq NUMBER;
-    --  Declaration of UpdateChildParentExist constraint for the parent "SUPERVISOR"
-    cursor cpk1_investigacion(var_sup_id varchar) is
-       select 1
-       from   SUPERVISOR
-       where  SUP_ID = var_sup_id
-        and   var_sup_id is not null;
     --  Declaration of UpdateParentRestrict constraint for "PROFESOR_INVESTIGACION"
     cursor cfk1_profesor_investigacion(var_inv_id varchar) is
        select 1
@@ -511,20 +648,6 @@ declare
         and   var_inv_id is not null;
 
 begin
-    seq := IntegrityPackage.GetNestLevel;
-    --  Parent "SUPERVISOR" must exist when updating a child in "INVESTIGACION"
-    if (:new.SUP_ID is not null) and (seq = 0) then
-       open  cpk1_investigacion(:new.SUP_ID);
-       fetch cpk1_investigacion into dummy;
-       found := cpk1_investigacion%FOUND;
-       close cpk1_investigacion;
-       if not found then
-          errno  := -20003;
-          errmsg := 'Parent does not exist in "SUPERVISOR". Cannot update child in "INVESTIGACION".';
-          raise integrity_error;
-       end if;
-    end if;
-
     --  Cannot modify parent code in "INVESTIGACION" if children still exist in "PROFESOR_INVESTIGACION"
     if (updating('INV_ID') and :old.INV_ID != :new.INV_ID) then
        open  cfk1_profesor_investigacion(:old.INV_ID);
@@ -547,6 +670,86 @@ begin
        if found then
           errno  := -20005;
           errmsg := 'Children still exist in "PUBLICACION". Cannot modify parent code in "INVESTIGACION".';
+          raise integrity_error;
+       end if;
+    end if;
+
+
+--  Errors handling
+exception
+    when integrity_error then
+       raise_application_error(errno, errmsg);
+end;
+/
+
+
+create trigger TIB_LINEA_INVESTIGACION before insert
+on LINEA_INVESTIGACION for each row
+declare
+    integrity_error  exception;
+    errno            integer;
+    errmsg           char(200);
+    dummy            integer;
+    found            boolean;
+    --  Declaration of InsertChildParentExist constraint for the parent "PUBLICACION"
+    cursor cpk1_linea_investigacion(var_pub_id integer) is
+       select 1
+       from   PUBLICACION
+       where  PUB_ID = var_pub_id
+        and   var_pub_id is not null;
+
+begin
+    --  Parent "PUBLICACION" must exist when inserting a child in "LINEA_INVESTIGACION"
+    if :new.PUB_ID is not null then
+       open  cpk1_linea_investigacion(:new.PUB_ID);
+       fetch cpk1_linea_investigacion into dummy;
+       found := cpk1_linea_investigacion%FOUND;
+       close cpk1_linea_investigacion;
+       if not found then
+          errno  := -20002;
+          errmsg := 'Parent does not exist in "PUBLICACION". Cannot create child in "LINEA_INVESTIGACION".';
+          raise integrity_error;
+       end if;
+    end if;
+
+
+--  Errors handling
+exception
+    when integrity_error then
+       raise_application_error(errno, errmsg);
+end;
+/
+
+
+create trigger TUB_LINEA_INVESTIGACION before update
+of LNINV_ID,
+   PUB_ID
+on LINEA_INVESTIGACION for each row
+declare
+    integrity_error  exception;
+    errno            integer;
+    errmsg           char(200);
+    dummy            integer;
+    found            boolean;
+    seq NUMBER;
+    --  Declaration of UpdateChildParentExist constraint for the parent "PUBLICACION"
+    cursor cpk1_linea_investigacion(var_pub_id integer) is
+       select 1
+       from   PUBLICACION
+       where  PUB_ID = var_pub_id
+        and   var_pub_id is not null;
+
+begin
+    seq := IntegrityPackage.GetNestLevel;
+    --  Parent "PUBLICACION" must exist when updating a child in "LINEA_INVESTIGACION"
+    if (:new.PUB_ID is not null) and (seq = 0) then
+       open  cpk1_linea_investigacion(:new.PUB_ID);
+       fetch cpk1_linea_investigacion into dummy;
+       found := cpk1_linea_investigacion%FOUND;
+       close cpk1_linea_investigacion;
+       if not found then
+          errno  := -20003;
+          errmsg := 'Parent does not exist in "PUBLICACION". Cannot update child in "LINEA_INVESTIGACION".';
           raise integrity_error;
        end if;
     end if;
@@ -694,7 +897,8 @@ end;
 
 create trigger TUB_PROFESOR_INVESTIGACION before update
 of PRF_ID,
-   INV_ID
+   INV_ID,
+   PRFINV_ES_LIDER
 on PROFESOR_INVESTIGACION for each row
 declare
     integrity_error  exception;
@@ -717,6 +921,13 @@ declare
         and   var_inv_id is not null;
 
 begin
+    --  Non modifiable column "PRFINV_ES_LIDER" cannot be modified
+    if updating('PRFINV_ES_LIDER') and :old.PRFINV_ES_LIDER != :new.PRFINV_ES_LIDER then
+       errno  := -20001;
+       errmsg := 'Non modifiable column "PRFINV_ES_LIDER" cannot be modified.';
+       raise integrity_error;
+    end if;
+
     seq := IntegrityPackage.GetNestLevel;
     --  Parent "PROFESOR" must exist when updating a child in "PROFESOR_INVESTIGACION"
     if (:new.PRF_ID is not null) and (seq = 0) then
@@ -867,9 +1078,9 @@ end;
 
 create trigger TUB_PUBLICACION before update
 of PUB_ID,
-   CON_ID,
+   INV_ID,
    REV_ID,
-   INV_ID
+   CON_ID
 on PUBLICACION for each row
 declare
     integrity_error  exception;
@@ -1028,81 +1239,6 @@ begin
        if found then
           errno  := -20005;
           errmsg := 'Children still exist in "PUBLICACION". Cannot modify parent code in "REVISTA".';
-          raise integrity_error;
-       end if;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TDB_SUPERVISOR before delete
-on SUPERVISOR for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    --  Declaration of DeleteParentRestrict constraint for "INVESTIGACION"
-    cursor cfk1_investigacion(var_sup_id varchar) is
-       select 1
-       from   INVESTIGACION
-       where  SUP_ID = var_sup_id
-        and   var_sup_id is not null;
-
-begin
-    --  Cannot delete parent "SUPERVISOR" if children still exist in "INVESTIGACION"
-    open  cfk1_investigacion(:old.SUP_ID);
-    fetch cfk1_investigacion into dummy;
-    found := cfk1_investigacion%FOUND;
-    close cfk1_investigacion;
-    if found then
-       errno  := -20006;
-       errmsg := 'Children still exist in "INVESTIGACION". Cannot delete parent "SUPERVISOR".';
-       raise integrity_error;
-    end if;
-
-
---  Errors handling
-exception
-    when integrity_error then
-       raise_application_error(errno, errmsg);
-end;
-/
-
-
-create trigger TUB_SUPERVISOR before update
-of SUP_ID
-on SUPERVISOR for each row
-declare
-    integrity_error  exception;
-    errno            integer;
-    errmsg           char(200);
-    dummy            integer;
-    found            boolean;
-    --  Declaration of UpdateParentRestrict constraint for "INVESTIGACION"
-    cursor cfk1_investigacion(var_sup_id varchar) is
-       select 1
-       from   INVESTIGACION
-       where  SUP_ID = var_sup_id
-        and   var_sup_id is not null;
-
-begin
-    --  Cannot modify parent code in "SUPERVISOR" if children still exist in "INVESTIGACION"
-    if (updating('SUP_ID') and :old.SUP_ID != :new.SUP_ID) then
-       open  cfk1_investigacion(:old.SUP_ID);
-       fetch cfk1_investigacion into dummy;
-       found := cfk1_investigacion%FOUND;
-       close cfk1_investigacion;
-       if found then
-          errno  := -20005;
-          errmsg := 'Children still exist in "INVESTIGACION". Cannot modify parent code in "SUPERVISOR".';
           raise integrity_error;
        end if;
     end if;
