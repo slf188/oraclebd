@@ -389,8 +389,8 @@ tablespace INDICESG1
 create table PUBLICACION (
    PUB_ID               INTEGER               not null,
    INV_ID               VARCHAR2(8)           not null,
-   REV_ID               VARCHAR2(8)           not null,
-   CON_ID               VARCHAR2(8)           not null,
+   REV_ID               VARCHAR2(8),
+   CON_ID               VARCHAR2(8),
    PUB_TITULO           VARCHAR2(40),
    constraint PK_PUBLICACION primary key (PUB_ID)
 )
