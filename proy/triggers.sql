@@ -123,6 +123,18 @@ begin
 end;
 /
 
+-- trigger que haga la pagina de inicio siempre sea 1, rev_pag_inicio en la tabla revista, enviar un mensaje de error si no es 1
+create or replace trigger pagina_inicio_revista
+before insert or update on revista
+for each row
+begin
+   if :new.rev_pag_inicio != 1 then
+      raise_application_error(-20000, 'La pagina de inicio debe ser 1');
+   end if;
+end;
+/
+
+
 -- ideas para triggers
 -- trigger que verifique que no se repita el num de despacho del profesor
 -- trigger que verifique que no se repita el telefono del profesor
