@@ -2,12 +2,8 @@
 insert into congreso values ('CON-1', 'Congreso 1', 'Nacional', to_date('01/01/2023', 'dd/mm/yyyy'), to_date('02/01/2023', 'dd/mm/yyyy'), 'Madrid', 'España', 'Editorial 1');
 insert into congreso values ('CON-2', 'Congreso 2', 'Internacional', to_date('03/01/2023', 'dd/mm/yyyy'), to_date('04/01/2023', 'dd/mm/yyyy'), 'Valencia', 'España', 'Editorial 2');
 
-insert into supervisor values ('SUP-1');
-insert into supervisor values ('SUP-2');
-insert into supervisor values ('SUP-3');
-
-insert into investigacion values ('INV-1', 'SUP-1', 'Investigacion 1', 'INV1', 'Descripcion 1', 'Financiador 1', 1000, to_date('01/01/2023', 'dd/mm/yyyy'), to_date('02/01/2023', 'dd/mm/yyyy'));
-insert into investigacion values ('INV-2', 'SUP-2', 'Investigacion 2', 'INV2', 'Descripcion 2', 'Financiador 2', 2000, to_date('03/01/2023', 'dd/mm/yyyy'), to_date('04/01/2023', 'dd/mm/yyyy'));
+insert into investigacion values ('INV-1', 'Investigacion 1', 'INV1', 'Descripcion 1', 'Financiador 1', 1000, to_date('01/01/2023', 'dd/mm/yyyy'), to_date('02/01/2023', 'dd/mm/yyyy'));
+insert into investigacion values ('INV-2', 'Investigacion 2', 'INV2', 'Descripcion 2', 'Financiador 2', 2000, to_date('03/01/2023', 'dd/mm/yyyy'), to_date('04/01/2023', 'dd/mm/yyyy'));
 
 insert into revista values ('REV-1', 'Revista 1', 'Editorial 1', 1, 1, 1, 1);
 insert into revista values ('REV-2', 'Revista 2', 'Editorial 2', 2, 2, 2, 2);
