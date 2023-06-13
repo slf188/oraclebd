@@ -122,6 +122,17 @@ begin
 end;
 /
 
+-- trigger para que la pagina de inicio y fin no sean igual en revista, rev_pagino_inicio, rev_pagina_fin
+create or replace trigger pagina_inicio_fin_revista
+before insert or update on revista
+for each row
+begin
+   if :new.rev_pag_inicio = :new.rev_pag_fin then
+      raise_application_error(-20000, 'La pagina de inicio y fin no pueden ser iguales');
+   end if;
+end;
+/
+
 
 -- ideas para triggers
 -- trigger que verifique que no se repita el num de despacho del profesor
