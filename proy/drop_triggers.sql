@@ -1,0 +1,11 @@
+drop trigger tipo_congreso;
+drop trigger paginas_revista;
+drop trigger titulacion_doctor;
+drop trigger lider_investigacion;
+drop trigger fecha_investigacion;
+drop trigger lider_doctor;
+drop trigger fecha_profesor_investigacion;
+drop trigger fecha_fin_profesor_investigacion;
+drop trigger fecha_inicio_profesor_investigacion;
+drop trigger pagina_inicio_revista;
+drop trigger pagina_inicio_fin_revista;
