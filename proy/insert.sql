@@ -8,8 +8,8 @@ insert into investigacion values ('INV-2', 'Investigacion 2', 'INV2', 'Descripci
 insert into revista values ('REV-1', 'Revista 1', 'Editorial 1', 1, 1, 1, 1);
 insert into revista values ('REV-2', 'Revista 2', 'Editorial 2', 2, 2, 2, 2);
 
-insert into publicacion values (1, 'CON-1', 'REV-1', 'INV-1', 'Titulo 1');
-insert into publicacion values (2, 'CON-2', 'REV-2', 'INV-2', 'Titulo 2');
+insert into publicacion values (1, 'INV-1', 'REV-1', 'CON-1', 'Titulo 1');
+insert into publicacion values (2, 'INV-2', 'REV-2', 'CON-2', 'Titulo 2');
 
 insert into linea_investigacion values ('LNINV-1', 1, 'Linea 1', 'Descriptores 1');
 insert into linea_investigacion values ('LNINV-2', 2, 'Linea 2', 'Descriptores 2');
