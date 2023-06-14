@@ -16,11 +16,11 @@ insert into revista values ('REVI_003', 'Revista 3', 'Editorial 3', 3, 3, 1, 30)
 insert into revista values ('REVI_004', 'Revista 4', 'Editorial 4', 4, 4, 1, 40);
 insert into revista values ('REVI_005', 'Revista 5', 'Editorial 5', 5, 5, 1, 50);
 
-insert into publicacion values (1, 'INVE_001', 'REVI_1', null, 'Titulo 1');
-insert into publicacion values (2, 'INVE_002', 'REVI_2', null, 'Titulo 2');
-insert into publicacion values (3, 'INVE_003', 'REVI_3', null, 'Titulo 3');
-insert into publicacion values (4, 'INVE_004', null, 'CONG_1', 'Titulo 4');
-insert into publicacion values (5, 'INVE_005', null, 'CONG_2', 'Titulo 5');
+insert into publicacion values (1, 'INVE_001', 'REVI_001', null, 'Titulo 1');
+insert into publicacion values (2, 'INVE_002', 'REVI_002', null, 'Titulo 2');
+insert into publicacion values (3, 'INVE_003', 'REVI_003', null, 'Titulo 3');
+insert into publicacion values (4, 'INVE_004', null, 'CONG_001', 'Titulo 4');
+insert into publicacion values (5, 'INVE_005', null, 'CONG_002', 'Titulo 5');
 
 insert into linea_investigacion values ('LINI_001', 1, 'Linea 1', 'Descripctores 1');
 insert into linea_investigacion values ('LINI_002', 2, 'Linea 2', 'Descripctores 2');
