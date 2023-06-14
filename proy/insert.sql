@@ -34,8 +34,8 @@ insert into profesor values ('PROF_003', 'Pedro', 'Gomez', 3, '123', 'No Doctor'
 insert into profesor values ('PROF_004', 'Maria', 'Lopez', 4, '1234', 'Doctor');
 insert into profesor values ('PROF_005', 'Luisa', 'Gonzales', 5, '12345', 'No Doctor');
 
-insert into profesor_investigacion values ('PROF_001', 'INVE_001', to_date('01/01/2015', 'dd/mm/yyyy'), to_date('01/01/2016', 'dd/mm/yyyy', 1));
-insert into profesor_investigacion values ('PROF_002', 'INVE_002', to_date('01/01/2016', 'dd/mm/yyyy'), to_date('01/01/2017', 'dd/mm/yyyy', 0));
-insert into profesor_investigacion values ('PROF_003', 'INVE_003', to_date('01/01/2017', 'dd/mm/yyyy'), to_date('01/01/2018', 'dd/mm/yyyy', 0));
-insert into profesor_investigacion values ('PROF_004', 'INVE_004', to_date('01/01/2018', 'dd/mm/yyyy'), to_date('01/01/2019', 'dd/mm/yyyy', 1));
-insert into profesor_investigacion values ('PROF_005', 'INVE_005', to_date('01/01/2019', 'dd/mm/yyyy'), to_date('01/01/2020', 'dd/mm/yyyy', 0));
+insert into profesor_investigacion values ('PROF_001', 'INVE_001', to_date('01/01/2015', 'dd/mm/yyyy'), to_date('01/01/2016', 'dd/mm/yyyy'), 1);
+insert into profesor_investigacion values ('PROF_002', 'INVE_002', to_date('01/01/2016', 'dd/mm/yyyy'), to_date('01/01/2017', 'dd/mm/yyyy'), 0);
+insert into profesor_investigacion values ('PROF_003', 'INVE_003', to_date('01/01/2017', 'dd/mm/yyyy'), to_date('01/01/2018', 'dd/mm/yyyy'), 0);
+insert into profesor_investigacion values ('PROF_004', 'INVE_004', to_date('01/01/2018', 'dd/mm/yyyy'), to_date('01/01/2019', 'dd/mm/yyyy'), 1);
+insert into profesor_investigacion values ('PROF_005', 'INVE_005', to_date('01/01/2019', 'dd/mm/yyyy'), to_date('01/01/2020', 'dd/mm/yyyy'), 0);
