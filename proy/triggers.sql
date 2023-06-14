@@ -148,7 +148,18 @@ begin
     and prfinv_fecha_fin = :new.prfinv_fecha_fin;
 
     if v_count > 0 then
-        raise_application_error(-20001, 'El profesor ya participa en esas fechas');
+        raise_application_error(-20001, 'Ya participo en esas fechas');
+    end if;
+
+    select count(*) into v_count
+    from profesor_investigacion
+    where prf_id = :new.prf_id
+    and inv_id = :new.inv_id
+    and :new.prfinv_fecha_inicio between prfinv_fecha_inicio and prfinv_fecha_fin
+    and :new.prfinv_fecha_fin between prfinv_fecha_inicio and prfinv_fecha_fin;
+
+    if v_count > 0 then
+        raise_application_error(-20001, 'Ya participo en esas fechas');
     end if;
 end;
 /
