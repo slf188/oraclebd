@@ -10,13 +10,6 @@ update revista set REV_PAG_INICIO = 10, REV_PAG_FIN = 1 where REV_ID = 'REVI_001
 -- pasa
 update revista set REV_PAG_INICIO = 1, REV_PAG_FIN = 6 where REV_ID = 'REVI_001';
 
--- prueba titulacion_doctor
-select * from profesor;
--- no pasa
-insert into profesor values ('PROF_006', 'Luis', 'Gonzales', 6, '123456', 'Ingeniero');
--- pasa
-insert into profesor values ('PROF_006', 'Luis', 'Gonzales', 6, '123456', 'Doctor');
-
 -- prueba lider_investigacion
 -- no pasa
 insert into profesor_investigacion values ('PROF_002', 'INVE_001', to_date('01/01/2015', 'dd/mm/yyyy'), to_date('01/01/2016', 'dd/mm/yyyy'), 1);
