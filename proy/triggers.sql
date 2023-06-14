@@ -65,7 +65,7 @@ declare
 begin
     if :new.PRFINV_ES_LIDER = 1 then
         select PRF_TITULACION into v_titulacion from profesor where PRF_ID = :new.PRF_ID;
-        if v_titulacion != 'Doctor' or v_titulacion != 'doctor' then
+        if upper(v_titulacion) != 'DOCTOR' then
             raise_application_error(-20000, 'El profesor debe ser doctor para ser lider');
         end if;
     end if;
