@@ -68,3 +68,9 @@ insert into profesor_investigacion values ('PRF-1', 'INV-3', to_date('01/07/2023
 insert into profesor_investigacion values ('PRF-1', 'INV-3', to_date('02/07/2023', 'dd/mm/yyyy'), to_date('03/07/2023', 'dd/mm/yyyy'), 0);
 -- ultima y tercera
 insert into profesor_investigacion values ('PRF-1', 'INV-3', to_date('01/12/2023', 'dd/mm/yyyy'), to_date('01/01/2024', 'dd/mm/yyyy'), 0);
+
+-- prueba trg_validar_publicacion
+-- no pasa
+insert into publicacion values (3, 'INV-3', 'REV-2', 'CON-2', 'Titulo 3');
+-- pasa
+insert into publicacion values (3, 'INV-3', NULL, 'CON-2', 'Titulo 3');
