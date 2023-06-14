@@ -234,20 +234,3 @@ begin
     end if;
 end;
 /
-
--- trigger para que no se repita el nombre de congreso, con_nombre
-create or replace trigger con_nombre
-before insert or update on congreso
-for each row
-declare
-    v_count number;
-begin
-    select count(*) into v_count
-    from congreso
-    where con_nombre = :new.con_nombre;
-
-    if v_count > 0 then
-        raise_application_error(-20001, 'Ya existe un congreso con ese nombre');
-    end if;
-end;
-/
