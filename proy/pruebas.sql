@@ -60,12 +60,11 @@ insert into profesor_investigacion values ('PRF-4', 'INV-4', to_date('05/01/2023
 insert into profesor values ('PRF-4', 'Damian', 'Nicolalde', 4, '123', 'Doctor');
 insert into investigacion values ('INV-3', 'Investigacion 3', 'INV3', 'Descripcion 3', 'Financiador 3', 3000, to_date('03/01/2023', 'dd/mm/yyyy'), to_date('03/01/2024', 'dd/mm/yyyy'));
 
--- primera participacion va a ser de enero a abril 1
+-- primera participacion
 insert into profesor_investigacion values ('PRF-1', 'INV-3', to_date('03/01/2023', 'dd/mm/yyyy'), to_date('01/04/2023', 'dd/mm/yyyy'), 0);
--- segunda participacion va a ser de julio a septiembre 1
+-- segunda participacio
 insert into profesor_investigacion values ('PRF-1', 'INV-3', to_date('01/07/2023', 'dd/mm/yyyy'), to_date('01/09/2023', 'dd/mm/yyyy'), 0);
 insert into profesor_investigacion values ('PRF-1', 'INV-3', to_date('01/07/2023', 'dd/mm/yyyy'), to_date('01/09/2023', 'dd/mm/yyyy'), 0);
--- ultima y tercera participacion va a ser de deciembre 2023 a enero 2024
-insert into profesor_investigacion values ('PRF-1', 'INV-3', to_date('01/12/2023', 'dd/mm/yyyy'), to_date('01/01/2024', 'dd/mm/yyyy'), 0);
--- hacer un trigger que si le vuelvo a poner de julio a septiembre decir que ya participo en esas fechas
+insert into profesor_investigacion values ('PRF-1', 'INV-3', to_date('02/07/2023', 'dd/mm/yyyy'), to_date('03/07/2023', 'dd/mm/yyyy'), 0);
+-- ultima y tercera
 insert into profesor_investigacion values ('PRF-1', 'INV-3', to_date('01/12/2023', 'dd/mm/yyyy'), to_date('01/01/2024', 'dd/mm/yyyy'), 0);
