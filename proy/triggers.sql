@@ -133,6 +133,26 @@ begin
 end;
 /
 
+-- hacer un trigger que no permita que vuelva a participar en las fechas que ya participo un profesor
+create or replace trigger participacion_profesor_investigacion
+before insert or update on profesor_investigacion
+for each row
+declare
+    v_count number;
+begin
+    select count(*) into v_count
+    from profesor_investigacion
+    where prf_id = :new.prf_id
+    and inv_id = :new.inv_id
+    and prfinv_fecha_inicio = :new.prfinv_fecha_inicio
+    and prfinv_fecha_fin = :new.prfinv_fecha_fin;
+
+    if v_count > 0 then
+        raise_application_error(-20001, 'El profesor ya participa en esas fechas');
+    end if;
+end;
+/
+
 
 -- ideas para triggers
 -- trigger que verifique que no se repita el num de despacho del profesor
