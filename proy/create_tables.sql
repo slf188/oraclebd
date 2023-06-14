@@ -1,17 +1,33 @@
+create table CONGRESO (
+   CON_ID               VARCHAR2(8)           not null,
+   CON_NOMBRE           VARCHAR2(64),
+   CON_TIPO             VARCHAR2(30),
+   CON_FECHA_INICIO     DATE,
+   CON_FECHA_FIN        DATE,
+   CON_LUGAR_CELEBRACION VARCHAR2(50),
+   CON_PAIS             VARCHAR2(50),
+   CON_EDITORIAL        VARCHAR2(30),
+   constraint PK_CONGRESO primary key (CON_ID)
+)
+
+create table INVESTIGACION (
+   INV_ID               VARCHAR2(8)           not null,
+   INV_NOMBRE           VARCHAR2(64),
+   INV_ACRONIMO         VARCHAR2(10),
+   INV_DESCRIPCION      VARCHAR2(200),
+   INV_FINANCIADOR      VARCHAR2(64),
+   INV_PRESUPUESTO      NUMBER(12,4),
+   INV_FECHA_INICIO     DATE,
+   INV_FECHA_FIN        DATE,
+   constraint PK_INVESTIGACION primary key (INV_ID)
+)
+
 create table LINEA_INVESTIGACION (
    LNINV_ID             VARCHAR2(8)           not null,
    PUB_ID               INTEGER               not null,
-   LNINV_NOMBRE         VARCHAR2(10),
+   LNINV_NOMBRE         VARCHAR2(30),
    LNINV_DESCRIPTORES   VARCHAR2(150),
    constraint PK_LINEA_INVESTIGACION primary key (LNINV_ID)
-)
-
-create table PROFESOR_INVESTIGACION (
-   PRF_ID               VARCHAR2(8)           not null,
-   INV_ID               VARCHAR2(8)           not null,
-   PRFINV_FECHA_INICIO  DATE,
-   PRFINV_FECHA_FIN     DATE,
-   PRFINV_ES_LIDER      NUMBER
 )
 
 create table PROFESOR (
@@ -24,11 +40,19 @@ create table PROFESOR (
    constraint PK_PROFESOR primary key (PRF_ID)
 )
 
+create table PROFESOR_INVESTIGACION (
+   PRF_ID               VARCHAR2(8)           not null,
+   INV_ID               VARCHAR2(8)           not null,
+   PRFINV_FECHA_INICIO  DATE,
+   PRFINV_FECHA_FIN     DATE,
+   PRFINV_ES_LIDER      NUMBER(1,0)
+)
+
 create table PUBLICACION (
    PUB_ID               INTEGER               not null,
-   CON_ID               VARCHAR2(8)           not null,
-   REV_ID               VARCHAR2(8)           not null,
    INV_ID               VARCHAR2(8)           not null,
+   REV_ID               VARCHAR2(8),
+   CON_ID               VARCHAR2(8),
    PUB_TITULO           VARCHAR2(40),
    constraint PK_PUBLICACION primary key (PUB_ID)
 )
@@ -44,32 +68,3 @@ create table REVISTA (
    constraint PK_REVISTA primary key (REV_ID)
 )
 
-create table INVESTIGACION (
-   INV_ID               VARCHAR2(8)           not null,
-   SUP_ID               VARCHAR2(8),
-   INV_NOMBRE           VARCHAR2(64),
-   INV_ACRONIMO         VARCHAR2(10),
-   INV_DESCRIPCION      VARCHAR2(200),
-   INV_FINANCIADOR      VARCHAR2(64),
-   INV_PRESUPUESTO      NUMBER(12,4),
-   INV_FECHA_INICIO     DATE,
-   INV_FECHA_FIN        DATE,
-   constraint PK_INVESTIGACION primary key (INV_ID)
-)
-
-create table CONGRESO (
-   CON_ID               VARCHAR2(8)           not null,
-   CON_NOMBRE           VARCHAR2(64),
-   CON_TIPO             VARCHAR2(30),
-   CON_FECHA_INICIO     DATE,
-   CON_FECHA_FIN        DATE,
-   CON_LUGAR_CELEBRACION VARCHAR2(50),
-   CON_PAIS             VARCHAR2(50),
-   CON_EDITORIAL        VARCHAR2(30),
-   constraint PK_CONGRESO primary key (CON_ID)
-)
-
-create table SUPERVISOR (
-   SUP_ID               VARCHAR2(8)           not null,
-   constraint PK_SUPERVISOR primary key (SUP_ID)
-)
