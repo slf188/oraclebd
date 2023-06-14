@@ -153,6 +153,23 @@ begin
 end;
 /
 
+--trigger que valida que una publicacion sea de uno de los 2 tipos y los 2 no nulos
+CREATE OR REPLACE TRIGGER trg_validar_publicacion
+BEFORE INSERT OR UPDATE ON PUBLICACION
+FOR EACH ROW
+DECLARE
+    v_congreso_id VARCHAR2(8);
+    v_revista_id VARCHAR2(8);
+BEGIN
+    v_congreso_id := :NEW.CON_ID;
+    v_revista_id := :NEW.REV_ID;
+
+    IF (v_congreso_id IS NOT NULL AND v_revista_id IS NOT NULL) OR (v_congreso_id IS NULL AND v_revista_id IS NULL) THEN
+        RAISE_APPLICATION_ERROR(-20001, 'Una publicación debe ser asociada a un congreso o a una revista, pero no a ambos o ninguno.');
+    END IF;
+END;
+/
+
 
 -- ideas para triggers
 -- trigger que verifique que no se repita el num de despacho del profesor
