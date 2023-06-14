@@ -218,5 +218,19 @@ begin
 end;
 /
 
--- ideas para triggers
--- trigger que verifique que no se repita el telefono del profesor
+-- trigger que verifique que no se pueda insertar un profesor con prf_telefono que ya exista
+create or replace trigger prf_telefono
+before insert or update on profesor
+for each row
+declare
+    v_count number;
+begin
+    select count(*) into v_count
+    from profesor
+    where prf_telefono = :new.prf_telefono;
+
+    if v_count > 0 then
+        raise_application_error(-20001, 'Ya existe un profesor con ese numero de telefono');
+    end if;
+end;
+/
