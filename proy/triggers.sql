@@ -181,6 +181,26 @@ BEGIN
 END;
 /
 
+--TRIGGER QUE VALIDA QUE LA PARTICIPACION DEL LIDER SEA LA MISMA DEL PROYECTO DE INVESTIGACION
+CREATE OR REPLACE TRIGGER TRG_VERIFICAR_PARTICIPACION_LIDER
+BEFORE INSERT OR UPDATE ON PROFESOR_INVESTIGACION
+FOR EACH ROW
+DECLARE
+   v_fecha_inicio INVESTIGACION.INV_FECHA_INICIO%TYPE;
+   v_fecha_fin INVESTIGACION.INV_FECHA_FIN%TYPE;
+BEGIN
+   -- Obtener las fechas de la investigación correspondiente
+   SELECT INV_FECHA_INICIO, INV_FECHA_FIN INTO v_fecha_inicio, v_fecha_fin
+   FROM INVESTIGACION
+   WHERE INV_ID = :NEW.INV_ID;
+
+   -- Verificar que el líder tenga las mismas fechas que la investigación
+   IF :NEW.PRFINV_ES_LIDER = 1 AND (:NEW.PRFINV_FECHA_INICIO <> v_fecha_inicio OR :NEW.PRFINV_FECHA_FIN <> v_fecha_fin) THEN
+      RAISE_APPLICATION_ERROR(-20003, 'Las fechas del líder de investigación deben coincidir con las fechas de la investigación');
+ END IF;
+END;
+/
+
 
 -- ideas para triggers
 -- trigger que verifique que no se repita el num de despacho del profesor
