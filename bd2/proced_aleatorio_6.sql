@@ -40,20 +40,6 @@ create table prueba (
 
 select * from prueba;
 
-begin 
-    for i in 1..10 loop
-        insert into prueba values(
-            i,
-            round(dbms_random.value(1,100)),
-            'titulo'||i,
-            'desc'||i,
-            round(dbms_random.value(2000,2020)),
-            '
-            '||i||'@'
-        );
-    end loop;
-end;
-
 -- procedimiento almacenado que inserte 10 registros en la tabla prueba
 -- con valores aleatorios
 create or replace procedure insertar_prueba
