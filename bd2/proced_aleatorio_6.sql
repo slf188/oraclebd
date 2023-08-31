@@ -42,20 +42,20 @@ select * from prueba;
 
 -- procedimiento almacenado que inserte 10 registros en la tabla prueba
 -- con valores aleatorios
-create or replace procedure insertar_prueba is
-    v_contador integer := 0;
+create or replace procedure insertar_prueba as
+    v_numero integer;
 begin
+    select max(pru_numero) into v_numero from prueba;
     for i in 1..10 loop
         insert into prueba values(
-            v_contador + 1,
+            v_numero+i,
             round(dbms_random.value(1,100)),
-            'titulo'||i,
-            'desc'||i,
+            'titulo'||(v_numero+i),
+            'desc'||(v_numero+i),
             round(dbms_random.value(2000,2020)),
             '
-            '||i||'@'
+            '||(v_numero+i)||'@'
         );
-        v_contador := v_contador + 1;
     end loop;
 end;
 
