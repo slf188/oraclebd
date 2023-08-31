@@ -42,12 +42,12 @@ select * from prueba;
 
 -- procedimiento almacenado que inserte 10 registros en la tabla prueba
 -- con valores aleatorios
-create or replace procedure insertar_prueba
-is
-begin 
+create or replace procedure insertar_prueba is
+    v_contador integer := 0;
+begin
     for i in 1..10 loop
         insert into prueba values(
-            i,
+            v_contador + 1,
             round(dbms_random.value(1,100)),
             'titulo'||i,
             'desc'||i,
@@ -55,6 +55,7 @@ begin
             '
             '||i||'@'
         );
+        v_contador := v_contador + 1;
     end loop;
 end;
 
