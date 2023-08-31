@@ -21,7 +21,7 @@ temporary tablespace TSTABLA_TEMP;
 
 create role desarrollo;
 
-grant create session, create table, alter any table, drop any table,
+grant create session, create table, alter any table, drop any table, create procedure,
 insert any table, update any table, delete any table, select any table
 to desarrollo;
 
